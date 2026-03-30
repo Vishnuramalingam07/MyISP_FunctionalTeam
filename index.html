@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyISP Internal Tools ✨</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <button class="settings-btn" onclick="openSettings()" title="Settings">
+                    <span class="settings-icon">⚙️</span>
+                </button>
+                <div class="logo-badge">✨</div>
+                <h1>MyISP Internal Tools</h1>
+                <p class="subtitle">🚀 Team Reporting Dashboard & Analytics</p>
+                <div class="header-divider"></div>
+            </div>
+        </header>
+
+        <main>
+            <div class="welcome-banner">
+                <h2>👋 Welcome Back!</h2>
+                <p>Select a tool below to get started</p>
+            </div>
+
+            <div class="tools-grid">
+                <div class="tool-card card-blue">
+                    <div class="card-glow"></div>
+                    <div class="tool-icon">📊</div>
+                    <h2>Daily Report</h2>
+                    <p>Generate daily activity and progress reports</p>
+                    <a href="daily-report.html" class="btn btn-blue">
+                        <span>Open Tool</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="tool-card card-teal">
+                    <div class="card-glow"></div>
+                    <div class="tool-icon">🔥</div>
+                    <h2>Hot Fix Daily Report</h2>
+                    <p>Generate hot fix release daily status dashboard from Azure DevOps data</p>
+                    <a href="hotfix-daily-report.html" class="btn btn-teal">
+                        <span>Open Tool</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="tool-card card-purple">
+                    <div class="card-glow"></div>
+                    <div class="tool-icon">🔄</div>
+                    <h2>Regression Report</h2>
+                    <p>View regression test results and analysis</p>
+                    <a href="regression-report.html" class="btn btn-purple">
+                        <span>Open Tool</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="tool-card card-pink">
+                    <div class="card-glow"></div>
+                    <div class="tool-icon">📋</div>
+                    <h2>Missing Field Report</h2>
+                    <p>Track and identify missing field items</p>
+                    <a href="missing-filed-report.html" class="btn btn-pink">
+                        <span>Open Tool</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="tool-card card-green">
+                    <div class="card-glow"></div>
+                    <div class="tool-icon">👥</div>
+                    <h2>Attendance Report</h2>
+                    <p>Monitor team attendance and availability</p>
+                    <a href="attendance-report.html" class="btn btn-green">
+                        <span>Open Tool</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="tool-card card-orange">
+                    <div class="card-glow"></div>
+                    <div class="tool-icon">🐛</div>
+                    <h2>Defect Status Report</h2>
+                    <p>Track defect status and resolution metrics</p>
+                    <a href="defect-status-report.html" class="btn btn-orange">
+                        <span>Open Tool</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="tool-card card-indigo">
+                    <div class="card-glow"></div>
+                    <div class="tool-icon">📋</div>
+                    <h2>ADO Testcase Upload</h2>
+                    <p>Upload Excel test cases directly to Azure DevOps Test Suite</p>
+                    <a href="ado-testcase-upload.html" class="btn btn-indigo">
+                        <span>Open Tool</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="tool-card card-rose">
+                    <div class="card-glow"></div>
+                    <div class="tool-icon">🔍</div>
+                    <h2>Match TFS &amp; SP</h2>
+                    <p>Compare ADO test execution counts with SharePoint PT status data</p>
+                    <a href="tc-compare-report.html" class="btn btn-rose">
+                        <span>Open Tool</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                </div>
+
+                <div class="tool-card card-amber">
+                    <div class="card-glow"></div>
+                    <div class="tool-icon">🔗</div>
+                    <h2>Auto External Reference ID Update</h2>
+                    <p>Batch update ExternalRef IDs on ADO work items using POC mapping</p>
+                    <a href="m-poc-extref.html" class="btn btn-amber">
+                        <span>Open Tool</span>
+                        <span class="btn-arrow">→</span>
+                    </a>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p>© 2026 MyISP Internal Tools | Last Updated: February 18, 2026</p>
+                <p class="footer-tagline">Made with ❤️ for the team</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="settings-modal">
+        <div class="settings-modal-content">
+            <div class="settings-header">
+                <h2>⚙️ Settings</h2>
+                <button class="close-btn" onclick="closeSettings()">&times;</button>
+            </div>
+            
+            <div id="iconSelectionView" class="settings-view">
+                <p class="settings-instruction">Select a tool to configure:</p>
+                <div class="settings-icons-grid">
+                    <div class="settings-icon-card" onclick="showToolSettings('daily-report')">
+                        <div class="settings-icon-large">📊</div>
+                        <p>Daily Report</p>
+                    </div>
+                    <div class="settings-icon-card" onclick="showToolSettings('regression-report')">
+                        <div class="settings-icon-large">🔄</div>
+                        <p>Regression Report</p>
+                    </div>
+                    <div class="settings-icon-card" onclick="showToolSettings('missing-filed')">
+                        <div class="settings-icon-large">📋</div>
+                        <p>Missing Filed</p>
+                    </div>
+                    <div class="settings-icon-card" onclick="showToolSettings('attendance')">
+                        <div class="settings-icon-large">👥</div>
+                        <p>Attendance</p>
+                    </div>
+                    <div class="settings-icon-card" onclick="showToolSettings('defect-status')">
+                        <div class="settings-icon-large">🐛</div>
+                        <p>Defect Status</p>
+                    </div>
+                    <div class="settings-icon-card" onclick="showToolSettings('ado-upload')">
+                        <div class="settings-icon-large">📋</div>
+                        <p>ADO Testcase Upload</p>
+                    </div>
+                    <div class="settings-icon-card" onclick="showToolSettings('hotfix-daily-report')">
+                        <div class="settings-icon-large">🔥</div>
+                        <p>Hot Fix Daily Report</p>
+                    </div>
+                    <div class="settings-icon-card" onclick="showToolSettings('tc-compare')">
+                        <div class="settings-icon-large">🔍</div>
+                        <p>Match TFS &amp; SP</p>
+                    </div>
+                    <div class="settings-icon-card" onclick="showToolSettings('mpoc-extref')">
+                        <div class="settings-icon-large">🔗</div>
+                        <p>US Ext Ref ID Update</p>
+                    </div>
+                    <div class="settings-icon-card" onclick="showToolSettings('appearance')">
+                        <div class="settings-icon-large">🎨</div>
+                        <p>Appearance</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="toolSettingsView" class="settings-view" style="display: none;">
+                <button class="back-to-icons-btn" onclick="backToIconSelection()">
+                    <span>← Back to Tools</span>
+                </button>
+                <div id="toolSettingsContent" class="tool-settings-content">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Settings Modal Functions
+        function openSettings() {
+            document.getElementById('settingsModal').style.display = 'flex';
+            document.getElementById('iconSelectionView').style.display = 'block';
+            document.getElementById('toolSettingsView').style.display = 'none';
+        }
+
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+
+        function backToIconSelection() {
+            document.getElementById('iconSelectionView').style.display = 'block';
+            document.getElementById('toolSettingsView').style.display = 'none';
+        }
+
+        function showToolSettings(toolId) {
+            document.getElementById('iconSelectionView').style.display = 'none';
+            document.getElementById('toolSettingsView').style.display = 'block';
+            
+            // Special handling for regression-report - fetch from API
+            if (toolId === 'regression-report') {
+                showRegressionReportSettings();
+            } else if (toolId === 'daily-report') {
+                showDailyReportSettings();
+            } else if (toolId === 'hotfix-daily-report') {
+                showHotfixDailyReportSettings();
+            } else if (toolId === 'tc-compare') {
+                showTCCompareSettings();
+            } else if (toolId === 'mpoc-extref') {
+                showMPocExtrefSettings();
+            } else {
+                // Get tool-specific settings for other tools
+                const settingsContent = getToolSettingsContent(toolId);
+                document.getElementById('toolSettingsContent').innerHTML = settingsContent;
+            }
+        }
+
+        async function showRegressionReportSettings() {
+            // Show loading state
+            document.getElementById('toolSettingsContent').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 2rem; margin-bottom: 15px;">⏳</div>
+                    <p>Loading configuration...</p>
+                </div>
+            `;
+
+            try {
+                // Fetch current config from API
+                const response = await fetch('/api/get-regression-config');
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to load configuration');
+                }
+
+                const config = data.config;
+
+                // Build HTML for regression settings
+                let html = `
+                    <div class="tool-settings-header">
+                        <div class="tool-settings-icon">🔄</div>
+                        <h3>Regression Report Configuration</h3>
+                    </div>
+                    <div class="config-info-box">
+                        <strong>⚙️ Azure DevOps Configuration</strong>
+                        <p>These settings control how the regression report connects to Azure DevOps and generates reports.</p>
+                    </div>
+                    <form class="settings-form" onsubmit="saveRegressionConfig(event)">
+                        <div class="setting-item">
+                            <label for="plan_id">Plan ID <span class="required">*</span></label>
+                            <input type="text" id="plan_id" name="plan_id" value="${config.plan_id || ''}" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="suite_id">Suite ID (Regression) <span class="required">*</span></label>
+                            <input type="text" id="suite_id" name="suite_id" value="${config.suite_id || ''}" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="insprint_suite_id">Insprint Suite ID <span class="required">*</span></label>
+                            <input type="text" id="insprint_suite_id" name="insprint_suite_id" value="${config.insprint_suite_id || ''}" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="target_suite_name">Target Suite Name</label>
+                            <input type="text" id="target_suite_name" name="target_suite_name" value="${config.target_suite_name || 'Regression Execution'}">
+                        </div>
+                        <div class="setting-item">
+                            <label for="insprint_suite_name">Insprint Suite Name</label>
+                            <input type="text" id="insprint_suite_name" name="insprint_suite_name" value="${config.insprint_suite_name || 'Insprint Execution'}">
+                        </div>
+                        <div class="setting-item">
+                            <label for="pat_token">PAT Token <span class="required">*</span></label>
+                            <input type="password" id="pat_token" name="pat_token" value="${config.pat_token || ''}" required>
+                            <button type="button" class="toggle-password-btn" onclick="togglePasswordVisibility('pat_token')">👁️</button>
+                        </div>
+                        <div class="settings-actions">
+                            <button type="button" class="btn-secondary" onclick="showRegressionReportSettings()">Reset</button>
+                            <button type="submit" class="btn-primary">Save Configuration</button>
+                        </div>
+                    </form>
+                `;
+
+                document.getElementById('toolSettingsContent').innerHTML = html;
+
+            } catch (error) {
+                document.getElementById('toolSettingsContent').innerHTML = `
+                    <div class="error-box">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">❌</div>
+                        <strong>Error Loading Configuration</strong>
+                        <p>${error.message}</p>
+                        <button class="btn-secondary" onclick="backToIconSelection()">Back</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function saveRegressionConfig(event) {
+            event.preventDefault();
+            
+            const formData = new FormData(event.target);
+            const config = {};
+            
+            for (let [key, value] of formData.entries()) {
+                config[key] = value;
+            }
+
+            // Show saving state
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/update-regression-config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(config)
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'Failed to save configuration');
+                }
+
+                showNotification('Configuration saved successfully! ✅');
+                
+                // Reload the settings to show updated values
+                setTimeout(() => {
+                    showRegressionReportSettings();
+                }, 1000);
+
+            } catch (error) {
+                showNotification(`Error: ${error.message} ❌`);
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        function togglePasswordVisibility(fieldId) {
+            const field = document.getElementById(fieldId);
+            if (field.type === 'password') {
+                field.type = 'text';
+            } else {
+                field.type = 'password';
+            }
+        }
+
+        async function showDailyReportSettings() {
+            document.getElementById('toolSettingsContent').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 2rem; margin-bottom: 15px;">⏳</div>
+                    <p>Loading configuration...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/get-daily-report-settings');
+                const data = await response.json();
+
+                if (!data.success) throw new Error(data.error || 'Failed to load configuration');
+
+                const s = data.settings;
+
+                document.getElementById('toolSettingsContent').innerHTML = `
+                    <div class="tool-settings-header">
+                        <div class="tool-settings-icon">📊</div>
+                        <h3>Daily Status Report Configuration</h3>
+                    </div>
+                    <div class="config-info-box">
+                        <strong>⚙️ SharePoint & Azure DevOps Configuration</strong>
+                        <p>Update the SharePoint file paths, file names and Azure DevOps Query IDs used to generate the daily status report.</p>
+                    </div>
+                    <form class="settings-form" onsubmit="saveDailyReportSettings(event)">
+                        <div class="setting-item">
+                            <label for="dr_pt_folder_path">PT Status File Path <span class="required">*</span></label>
+                            <input type="text" id="dr_pt_folder_path" name="pt_folder_path" value="${s.pt_folder_path || ''}" placeholder="e.g. /sites/mySPTesting/Shared Documents/General/..." required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="dr_pt_file_name">PT File Name <span class="required">*</span></label>
+                            <input type="text" id="dr_pt_file_name" name="pt_file_name" value="${s.pt_file_name || ''}" placeholder="e.g. Mar 28th_Release" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="dr_uat_folder_path">UAT Status File Path <span class="required">*</span></label>
+                            <input type="text" id="dr_uat_folder_path" name="uat_folder_path" value="${s.uat_folder_path || ''}" placeholder="e.g. /sites/mySPTesting/Shared Documents/General/..." required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="dr_uat_file_name">UAT File Name <span class="required">*</span></label>
+                            <input type="text" id="dr_uat_file_name" name="uat_file_name" value="${s.uat_file_name || ''}" placeholder="e.g. UAT_Status" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="dr_po_query_id">Product Owner Details Query ID <span class="required">*</span></label>
+                            <input type="text" id="dr_po_query_id" name="po_query_id" value="${s.po_query_id || ''}" placeholder="Azure DevOps Query ID (GUID)" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="dr_bugs_query_id">Open Bugs Query ID <span class="required">*</span></label>
+                            <input type="text" id="dr_bugs_query_id" name="bugs_query_id" value="${s.bugs_query_id || ''}" placeholder="Azure DevOps Query ID (GUID)" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="dr_stories_query_id">Story Summary Query ID <span class="required">*</span></label>
+                            <input type="text" id="dr_stories_query_id" name="stories_query_id" value="${s.stories_query_id || ''}" placeholder="Azure DevOps Query ID (GUID)" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="dr_defects_query_id">Overall Defect Summary Query ID <span class="required">*</span></label>
+                            <input type="text" id="dr_defects_query_id" name="defects_query_id" value="${s.defects_query_id || ''}" placeholder="Azure DevOps Query ID (GUID)" required>
+                        </div>
+                        <div class="settings-actions">
+                            <button type="button" class="btn-secondary" onclick="showDailyReportSettings()">Reset</button>
+                            <button type="submit" class="btn-primary">Save Configuration</button>
+                        </div>
+                    </form>
+                `;
+            } catch (error) {
+                document.getElementById('toolSettingsContent').innerHTML = `
+                    <div class="error-box">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">❌</div>
+                        <strong>Error Loading Configuration</strong>
+                        <p>${error.message}</p>
+                        <button class="btn-secondary" onclick="backToIconSelection()">Back</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function saveDailyReportSettings(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const settings = {};
+            for (let [key, value] of formData.entries()) {
+                settings[key] = value;
+            }
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/update-daily-report-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed to save configuration');
+
+                showNotification('Daily Report configuration saved successfully! ✅');
+                setTimeout(() => showDailyReportSettings(), 1000);
+            } catch (error) {
+                showNotification(`Error: ${error.message} ❌`);
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function showHotfixDailyReportSettings() {
+            document.getElementById('toolSettingsContent').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 2rem; margin-bottom: 15px;">⏳</div>
+                    <p>Loading configuration...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/get-hotfix-daily-report-settings');
+                const data = await response.json();
+
+                if (!data.success) throw new Error(data.error || 'Failed to load configuration');
+
+                const s = data.settings;
+
+                document.getElementById('toolSettingsContent').innerHTML = `
+                    <div class="tool-settings-header">
+                        <div class="tool-settings-icon">🔥</div>
+                        <h3>Hot Fix Daily Report Configuration</h3>
+                    </div>
+                    <div class="config-info-box">
+                        <strong>⚙️ SharePoint & Azure DevOps Configuration</strong>
+                        <p>Update the SharePoint file paths, file names and Azure DevOps Query IDs used to generate the hot fix daily status report.</p>
+                    </div>
+                    <form class="settings-form" onsubmit="saveHotfixDailyReportSettings(event)">
+                        <div class="setting-item">
+                            <label for="hf_pt_folder_path">PT Status File Path <span class="required">*</span></label>
+                            <input type="text" id="hf_pt_folder_path" name="pt_folder_path" value="${s.pt_folder_path || ''}" placeholder="e.g. /sites/mySPTesting/Shared Documents/General/..." required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="hf_pt_file_name">PT File Name <span class="required">*</span></label>
+                            <input type="text" id="hf_pt_file_name" name="pt_file_name" value="${s.pt_file_name || ''}" placeholder="e.g. Mar 28th_Release" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="hf_uat_folder_path">UAT Status File Path <span class="required">*</span></label>
+                            <input type="text" id="hf_uat_folder_path" name="uat_folder_path" value="${s.uat_folder_path || ''}" placeholder="e.g. /sites/mySPTesting/Shared Documents/General/..." required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="hf_uat_file_name">UAT File Name <span class="required">*</span></label>
+                            <input type="text" id="hf_uat_file_name" name="uat_file_name" value="${s.uat_file_name || ''}" placeholder="e.g. UAT_Status" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="hf_po_query_id">Product Owner Details Query ID <span class="required">*</span></label>
+                            <input type="text" id="hf_po_query_id" name="po_query_id" value="${s.po_query_id || ''}" placeholder="Azure DevOps Query ID (GUID)" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="hf_bugs_query_id">Open Bugs Query ID <span class="required">*</span></label>
+                            <input type="text" id="hf_bugs_query_id" name="bugs_query_id" value="${s.bugs_query_id || ''}" placeholder="Azure DevOps Query ID (GUID)" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="hf_stories_query_id">Story Summary Query ID <span class="required">*</span></label>
+                            <input type="text" id="hf_stories_query_id" name="stories_query_id" value="${s.stories_query_id || ''}" placeholder="Azure DevOps Query ID (GUID)" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="hf_defects_query_id">Overall Defect Summary Query ID <span class="required">*</span></label>
+                            <input type="text" id="hf_defects_query_id" name="defects_query_id" value="${s.defects_query_id || ''}" placeholder="Azure DevOps Query ID (GUID)" required>
+                        </div>
+                        <div class="settings-actions">
+                            <button type="button" class="btn-secondary" onclick="showHotfixDailyReportSettings()">Reset</button>
+                            <button type="submit" class="btn-primary">Save Configuration</button>
+                        </div>
+                    </form>
+                `;
+            } catch (error) {
+                document.getElementById('toolSettingsContent').innerHTML = `
+                    <div class="error-box">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">❌</div>
+                        <strong>Error Loading Configuration</strong>
+                        <p>${error.message}</p>
+                        <button class="btn-secondary" onclick="backToIconSelection()">Back</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function saveHotfixDailyReportSettings(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const settings = {};
+            for (let [key, value] of formData.entries()) {
+                settings[key] = value;
+            }
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/update-hotfix-daily-report-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed to save configuration');
+
+                showNotification('Hot Fix Daily Report configuration saved successfully! ✅');
+                setTimeout(() => showHotfixDailyReportSettings(), 1000);
+            } catch (error) {
+                showNotification(`Error: ${error.message} ❌`);
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function showTCCompareSettings() {
+            document.getElementById('toolSettingsContent').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 2rem; margin-bottom: 15px;">⏳</div>
+                    <p>Loading configuration...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/get-tc-compare-settings');
+                const data = await response.json();
+
+                if (!data.success) throw new Error(data.error || 'Failed to load configuration');
+
+                const s = data.settings;
+
+                document.getElementById('toolSettingsContent').innerHTML = `
+                    <div class="tool-settings-header">
+                        <div class="tool-settings-icon">🔍</div>
+                        <h3>Match TFS &amp; SP Configuration</h3>
+                    </div>
+                    <div class="config-info-box">
+                        <strong>⚙️ Azure DevOps &amp; SharePoint Configuration</strong>
+                        <p>Update the ADO Plan/Suite IDs and SharePoint file details used when generating the TFS vs SharePoint comparison report.</p>
+                    </div>
+                    <form class="settings-form" onsubmit="saveTCCompareSettings(event)">
+                        <div class="setting-item">
+                            <label for="tc_plan_id">Plan ID <span class="required">*</span></label>
+                            <input type="text" id="tc_plan_id" name="plan_id" value="${s.plan_id || ''}" placeholder="e.g. 4387418" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="tc_suite_id">Suite ID <span class="required">*</span></label>
+                            <input type="text" id="tc_suite_id" name="suite_id" value="${s.suite_id || ''}" placeholder="e.g. 4387420" required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="tc_sp_folder_path">SP Folder Path <span class="required">*</span></label>
+                            <input type="text" id="tc_sp_folder_path" name="sp_folder_path" value="${s.sp_folder_path || ''}" placeholder="e.g. /sites/mySPTesting/Shared Documents/General/..." required>
+                        </div>
+                        <div class="setting-item">
+                            <label for="tc_file_name">File Name <span class="required">*</span></label>
+                            <input type="text" id="tc_file_name" name="file_name" value="${s.file_name || ''}" placeholder="e.g. Mar 28th_Release" required>
+                        </div>
+                        <div class="settings-actions">
+                            <button type="button" class="btn-secondary" onclick="showTCCompareSettings()">Reset</button>
+                            <button type="submit" class="btn-primary">Save Configuration</button>
+                        </div>
+                    </form>
+                `;
+            } catch (error) {
+                document.getElementById('toolSettingsContent').innerHTML = `
+                    <div class="error-box">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">❌</div>
+                        <strong>Error Loading Configuration</strong>
+                        <p>${error.message}</p>
+                        <button class="btn-secondary" onclick="backToIconSelection()">Back</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function saveTCCompareSettings(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const settings = {};
+            for (let [key, value] of formData.entries()) {
+                settings[key] = value;
+            }
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/update-tc-compare-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed to save configuration');
+
+                showNotification('Match TFS & SP configuration saved successfully! ✅');
+                setTimeout(() => showTCCompareSettings(), 1000);
+            } catch (error) {
+                showNotification(`Error: ${error.message} ❌`);
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        async function showMPocExtrefSettings() {
+            document.getElementById('toolSettingsContent').innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div style="font-size: 2rem; margin-bottom: 15px;">⏳</div>
+                    <p>Loading configuration...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch('/api/get-mpoc-extref-settings');
+                const data = await response.json();
+
+                if (!data.success) throw new Error(data.error || 'Failed to load configuration');
+
+                const s = data.settings;
+
+                document.getElementById('toolSettingsContent').innerHTML = `
+                    <div class="tool-settings-header">
+                        <div class="tool-settings-icon">🔗</div>
+                        <h3>Auto External Reference ID Update Configuration</h3>
+                    </div>
+                    <div class="config-info-box">
+                        <strong>⚙️ Azure DevOps Configuration</strong>
+                        <p>Set the ADO Query ID whose work items will have their ExternalRef ID updated from the M POC Mapping CSV.</p>
+                    </div>
+                    <form class="settings-form" onsubmit="saveMPocExtrefSettings(event)">
+                        <div class="setting-item">
+                            <label for="mpoc_query_id">ADO Query ID <span class="required">*</span></label>
+                            <input type="text" id="mpoc_query_id" name="query_id" value="${s.query_id || ''}" placeholder="Azure DevOps Query ID (GUID)" required>
+                        </div>
+                        <div class="settings-actions">
+                            <button type="button" class="btn-secondary" onclick="showMPocExtrefSettings()">Reset</button>
+                            <button type="submit" class="btn-primary">Save Configuration</button>
+                        </div>
+                    </form>
+                `;
+            } catch (error) {
+                document.getElementById('toolSettingsContent').innerHTML = `
+                    <div class="error-box">
+                        <div style="font-size: 2rem; margin-bottom: 10px;">❌</div>
+                        <strong>Error Loading Configuration</strong>
+                        <p>${error.message}</p>
+                        <button class="btn-secondary" onclick="backToIconSelection()">Back</button>
+                    </div>
+                `;
+            }
+        }
+
+        async function saveMPocExtrefSettings(event) {
+            event.preventDefault();
+
+            const formData = new FormData(event.target);
+            const settings = {};
+            for (let [key, value] of formData.entries()) {
+                settings[key] = value;
+            }
+
+            const submitBtn = event.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Saving...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/update-mpoc-extref-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(settings)
+                });
+
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'Failed to save configuration');
+
+                showNotification('US Ext Ref ID Update configuration saved successfully! ✅');
+                setTimeout(() => showMPocExtrefSettings(), 1000);
+            } catch (error) {
+                showNotification(`Error: ${error.message} ❌`);
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        function getToolSettingsContent(toolId) {
+            const settingsConfig = {
+                'daily-report': {
+                    icon: '📊',
+                    name: 'Daily Report',
+                    settings: [
+                        { label: 'Enable Auto-refresh', type: 'checkbox', id: 'auto-refresh-daily' },
+                        { label: 'Refresh Interval (minutes)', type: 'number', id: 'refresh-interval-daily', value: '30' },
+                        { label: 'Default Date Range', type: 'select', id: 'date-range-daily', options: ['Today', 'Last 7 Days', 'Last 30 Days'] },
+                        { label: 'Email Notifications', type: 'checkbox', id: 'email-notify-daily' }
+                    ]
+                },
+                'regression-report': {
+                    icon: '🔄',
+                    name: 'Regression Report',
+                    settings: [
+                        { label: 'Auto-generate on schedule', type: 'checkbox', id: 'auto-gen-regression' },
+                        { label: 'Schedule Time', type: 'time', id: 'schedule-time-regression' },
+                        { label: 'Include Screenshots', type: 'checkbox', id: 'screenshots-regression' },
+                        { label: 'Max Report Age (days)', type: 'number', id: 'max-age-regression', value: '7' }
+                    ]
+                },
+                'missing-filed': {
+                    icon: '📋',
+                    name: 'Missing Field Report',
+                    settings: [
+                        { label: 'Query ID', type: 'text', id: 'query-id-missing', value: '0ed0091f-b665-4f51-b553-4c5afdea5e92', placeholder: 'Enter Azure DevOps Query ID' },
+                        { label: 'Show Resolved Items', type: 'checkbox', id: 'show-resolved-missing' },
+                        { label: 'Alert Threshold', type: 'number', id: 'alert-threshold-missing', value: '5' },
+                        { label: 'Sort By', type: 'select', id: 'sort-by-missing', options: ['Date', 'Priority', 'Owner'] },
+                        { label: 'Weekly Summary Email', type: 'checkbox', id: 'weekly-email-missing' }
+                    ]
+                },
+                'attendance': {
+                    icon: '👥',
+                    name: 'Attendance Report',
+                    settings: [
+                        { label: 'Track Late Arrivals', type: 'checkbox', id: 'track-late-attendance' },
+                        { label: 'Late Threshold (minutes)', type: 'number', id: 'late-threshold-attendance', value: '15' },
+                        { label: 'Working Days', type: 'text', id: 'working-days-attendance', value: 'Mon-Fri' },
+                        { label: 'Send Daily Summary', type: 'checkbox', id: 'daily-summary-attendance' }
+                    ]
+                },
+                'defect-status': {
+                    icon: '🐛',
+                    name: 'Defect Status Report',
+                    settings: [
+                        { label: 'Show Closed Defects', type: 'checkbox', id: 'show-closed-defects' },
+                        { label: 'Priority Filter', type: 'select', id: 'priority-defects', options: ['All', 'Critical', 'High', 'Medium', 'Low'] },
+                        { label: 'Auto-assign New Defects', type: 'checkbox', id: 'auto-assign-defects' },
+                        { label: 'SLA Warning (hours)', type: 'number', id: 'sla-warning-defects', value: '24' }
+                    ]
+                },
+                'ado-upload': {
+                    icon: '📋',
+                    name: 'ADO Testcase Upload',
+                    settings: [
+                        { label: 'Test Plan ID', type: 'text', id: 'ado-plan-id', value: '4319862' },
+                        { label: 'Test Suite ID', type: 'text', id: 'ado-suite-id', value: '4319870' },
+                        { label: 'PAT Token', type: 'password', id: 'ado-pat-token', value: '' },
+                        { label: 'Sheet Name', type: 'text', id: 'ado-sheet-name', value: 'Test Cases' }
+                    ]
+                },
+                'appearance': {
+                    icon: '🎨',
+                    name: 'Appearance & Theme',
+                    settings: [
+                        { 
+                            label: 'Header Color Theme', 
+                            type: 'color-select', 
+                            id: 'header-color', 
+                            options: [
+                                { name: 'Purple Gradient (Default)', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+                                { name: 'Ocean Blue', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+                                { name: 'Sunset Orange', value: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+                                { name: 'Forest Green', value: 'linear-gradient(135deg, #0ba360 0%, #3cba92 100%)' },
+                                { name: 'Royal Purple', value: 'linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%)' },
+                                { name: 'Fire Red', value: 'linear-gradient(135deg, #f83600 0%, #f9d423 100%)' },
+                                { name: 'Arctic Blue', value: 'linear-gradient(135deg, #00d2ff 0%, #3a47d5 100%)' },
+                                { name: 'Rose Pink', value: 'linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%)' },
+                                { name: 'Emerald', value: 'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)' },
+                                { name: 'Midnight', value: 'linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)' }
+                            ]
+                        },
+                        { 
+                            label: 'Footer Color Theme', 
+                            type: 'color-select', 
+                            id: 'footer-color', 
+                            options: [
+                                { name: 'Purple Gradient (Default)', value: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' },
+                                { name: 'Ocean Blue', value: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' },
+                                { name: 'Sunset Orange', value: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' },
+                                { name: 'Forest Green', value: 'linear-gradient(135deg, #0ba360 0%, #3cba92 100%)' },
+                                { name: 'Royal Purple', value: 'linear-gradient(135deg, #a8c0ff 0%, #3f2b96 100%)' },
+                                { name: 'Fire Red', value: 'linear-gradient(135deg, #f83600 0%, #f9d423 100%)' },
+                                { name: 'Arctic Blue', value: 'linear-gradient(135deg, #00d2ff 0%, #3a47d5 100%)' },
+                                { name: 'Rose Pink', value: 'linear-gradient(135deg, #ee9ca7 0%, #ffdde1 100%)' },
+                                { name: 'Emerald', value: 'linear-gradient(135deg, #56ab2f 0%, #a8e063 100%)' },
+                                { name: 'Midnight', value: 'linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)' }
+                            ]
+                        }
+                    ]
+                }
+            };
+
+            const config = settingsConfig[toolId];
+            if (!config) return '<p>Settings not available</p>';
+
+            // Load saved settings
+            const savedSettings = localStorage.getItem(`settings-${toolId}`);
+            const savedValues = savedSettings ? JSON.parse(savedSettings) : {};
+
+            let html = `
+                <div class="tool-settings-header">
+                    <div class="tool-settings-icon">${config.icon}</div>
+                    <h3>${config.name} Settings</h3>
+                </div>
+                <form class="settings-form" onsubmit="saveSettings(event, '${toolId}')">
+            `;
+
+            config.settings.forEach(setting => {
+                html += '<div class="setting-item">';
+                html += `<label for="${setting.id}">${setting.label}</label>`;
+                
+                if (setting.type === 'checkbox') {
+                    const checked = savedValues[setting.id] ? 'checked' : '';
+                    html += `<input type="checkbox" id="${setting.id}" name="${setting.id}" ${checked}>`;
+                } else if (setting.type === 'select') {
+                    html += `<select id="${setting.id}" name="${setting.id}">`;
+                    setting.options.forEach(opt => {
+                        const selected = savedValues[setting.id] === opt ? 'selected' : '';
+                        html += `<option value="${opt}" ${selected}>${opt}</option>`;
+                    });
+                    html += '</select>';
+                } else if (setting.type === 'color-select') {
+                    const savedColor = savedValues[setting.id] || setting.options[0].value;
+                    html += `<select id="${setting.id}" name="${setting.id}" class="color-select" onchange="previewColor('${setting.id}')">`;
+                    setting.options.forEach((opt, index) => {
+                        const selected = savedColor === opt.value ? 'selected' : '';
+                        html += `<option value="${opt.value}" ${selected}>${opt.name}</option>`;
+                    });
+                    html += '</select>';
+                    html += `<div class="color-preview" id="${setting.id}-preview" style="background: ${savedColor};"></div>`;
+                } else {
+                    const value = savedValues[setting.id] || setting.value || '';
+                    const placeholder = setting.placeholder ? `placeholder="${setting.placeholder}"` : '';
+                    html += `<input type="${setting.type}" id="${setting.id}" name="${setting.id}" value="${value}" ${placeholder}>`;
+                }
+                
+                html += '</div>';
+            });
+
+            html += `
+                    <div class="settings-actions">
+                        <button type="button" class="btn-secondary" onclick="resetSettings('${toolId}')">Reset to Default</button>
+                        <button type="submit" class="btn-primary">Save Settings</button>
+                    </div>
+                </form>
+            `;
+
+            return html;
+        }
+
+        async function saveSettings(event, toolId) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const settings = {};
+            
+            for (let [key, value] of formData.entries()) {
+                settings[key] = value;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem(`settings-${toolId}`, JSON.stringify(settings));
+            
+            // If appearance settings, apply colors immediately
+            if (toolId === 'appearance') {
+                applyColorTheme(settings);
+            }
+            
+            // If missing-filed tool and Query ID changed, update the Python script
+            if (toolId === 'missing-filed' && settings['query-id-missing']) {
+                try {
+                    const response = await fetch('/api/update-query-id', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            query_id: settings['query-id-missing']
+                        })
+                    });
+                    
+                    // Check if response is OK before parsing
+                    if (!response.ok) {
+                        const errorText = await response.text();
+                        throw new Error(`Server error: ${response.status} - ${errorText}`);
+                    }
+                    
+                    // Check if response is JSON
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const text = await response.text();
+                        throw new Error(`Expected JSON but got: ${text.substring(0, 100)}`);
+                    }
+                    
+                    const result = await response.json();
+                    if (!result.success) {
+                        throw new Error(result.error || 'Failed to update Query ID');
+                    }
+                    
+                    showNotification('Settings saved and Query ID updated in script! ✅');
+                } catch (error) {
+                    console.error('Error updating Query ID:', error);
+                    showNotification('Settings saved but failed to update Query ID: ' + error.message, 'error');
+                }
+            } else {
+                // Show success message
+                showNotification('Settings saved successfully! ✅');
+            }
+        }
+
+        function resetSettings(toolId) {
+            localStorage.removeItem(`settings-${toolId}`);
+            
+            // If appearance settings, reset to default colors
+            if (toolId === 'appearance') {
+                applyColorTheme({
+                    'header-color': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    'footer-color': 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                });
+            }
+            
+            showToolSettings(toolId); // Reload settings
+            showNotification('Settings reset to default! 🔄');
+        }
+
+        function previewColor(selectId) {
+            const select = document.getElementById(selectId);
+            const preview = document.getElementById(`${selectId}-preview`);
+            if (select && preview) {
+                preview.style.background = select.value;
+            }
+        }
+
+        function applyColorTheme(settings) {
+            const header = document.querySelector('header');
+            const footer = document.querySelector('footer');
+            const settingsHeader = document.querySelector('.settings-header');
+            
+            if (settings['header-color'] && header) {
+                header.style.background = settings['header-color'];
+            }
+            
+            if (settings['footer-color'] && footer) {
+                footer.style.background = settings['footer-color'];
+            }
+            
+            if (settings['header-color'] && settingsHeader) {
+                settingsHeader.style.background = settings['header-color'];
+            }
+        }
+
+        function loadSavedColors() {
+            const appearanceSettings = localStorage.getItem('settings-appearance');
+            if (appearanceSettings) {
+                const settings = JSON.parse(appearanceSettings);
+                applyColorTheme(settings);
+            }
+        }
+
+        // Load saved colors on page load
+        document.addEventListener('DOMContentLoaded', loadSavedColors);
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type === 'error' ? 'notification-error' : ''}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('settingsModal');
+            if (event.target === modal) {
+                closeSettings();
+            }
+        }
+    </script>
+</body>
+</html>
