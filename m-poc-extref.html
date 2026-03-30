@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto External Reference ID Update - MyISP Internal Tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .status-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px 32px;
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.10);
+            margin-bottom: 24px;
+        }
+        .generate-btn-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 16px 36px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+        .generate-btn-large:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .generate-btn-large:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .progress-section {
+            display: none;
+            margin-top: 20px;
+        }
+        .progress-bar-track {
+            background: #e0e4f0;
+            border-radius: 8px;
+            height: 10px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #f59e0b, #d97706);
+            animation: progress-pulse 1.5s ease-in-out infinite;
+            width: 100%;
+        }
+        @keyframes progress-pulse {
+            0%   { opacity: 1; }
+            50%  { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .status-msg {
+            font-size: 0.95rem;
+            color: #555;
+            margin: 8px 0;
+        }
+        .status-msg.error   { color: #dc2626; }
+        .status-msg.success { color: #059669; font-weight: 600; }
+        .steps-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .steps-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+            color: #444;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .steps-list li:last-child { border-bottom: none; }
+        .log-box {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 0.78rem;
+            max-height: 280px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            display: none;
+            margin-top: 14px;
+        }
+        .toggle-log-btn {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 5px 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            margin-top: 10px;
+            color: #555;
+        }
+        .report-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #b45309 100%);
+        }
+        .success-card {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-top: 14px;
+            display: none;
+        }
+        .success-card h4 {
+            color: #059669;
+            margin: 0 0 6px;
+            font-size: 1rem;
+        }
+        .success-card p {
+            color: #065f46;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+        .info-note {
+            background: #fff8e1;
+            border-left: 4px solid #f59e0b;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: #92400e;
+            margin-top: 16px;
+        }
+        .download-btn {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 13px 28px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            width: 100%;
+            justify-content: center;
+            margin-top: 12px;
+            text-decoration: none;
+        }
+        .download-btn:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>🔗 Auto External Reference ID Update</h1>
+            <p>Batch update ExternalRef IDs on ADO work items using M POC Mapping data</p>
+        </div>
+
+        <div class="report-content">
+
+            <!-- Info card -->
+            <div class="status-card report-info">
+                <h3>What this does</h3>
+                <ul class="steps-list">
+                    <li>📋 Reads the ADO Query to fetch all target work items</li>
+                    <li>🗺️ Loads the M POC Mapping CSV (Node Name → ExternalRef ID)</li>
+                    <li>🔍 Matches each work item's Area Path to the mapping</li>
+                    <li>⚡ Batch-fetches work item details in parallel (100 per request)</li>
+                    <li>✏️ Updates <strong>Custom.ExternalRefID</strong> field on matched items</li>
+                    <li>⏭️ Skips items already set to the correct value</li>
+                    <li>💾 Saves a CSV result file to the M_POC folder</li>
+                </ul>
+                <div class="info-note">
+                    ⚙️ Enter the ADO Query ID in the field below, or save it permanently via <strong>Settings → US Ext Ref ID Update</strong>.<br>
+                    The <strong>AZURE_DEVOPS_PAT</strong> environment variable must be set on this machine.
+                </div>
+            </div>
+
+            <!-- Action card -->
+            <div class="status-card">
+                <!-- ADO Query ID input -->
+                <div style="margin-bottom: 18px;">
+                    <label for="queryIdInput" style="display:block; font-weight:600; font-size:0.93rem; color:#444; margin-bottom:6px;">ADO Query ID</label>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="text" id="queryIdInput" placeholder="Enter ADO Query GUID…"
+                            style="flex:1; padding:10px 14px; border:1.5px solid #f59e0b88; border-radius:8px; font-size:0.95rem; outline:none; transition:border-color 0.2s;"
+                            onfocus="this.style.borderColor='#f59e0b'" onblur="this.style.borderColor='#f59e0b88'">
+                        <button onclick="saveQueryId()" id="saveQueryIdBtn"
+                            style="white-space:nowrap; padding:10px 20px; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; border:none; border-radius:8px; font-size:0.9rem; font-weight:600; cursor:pointer; transition:opacity 0.2s;"
+                            onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">💾 Save</button>
+                    </div>
+                    <p style="font-size:0.8rem; color:#888; margin:5px 0 0;">The GUID of the ADO query that returns the work items to update. Click <strong>Save</strong> to persist it for future runs.</p>
+                    <p id="saveStatusMsg" style="font-size:0.82rem; margin:4px 0 0; display:none;"></p>
+                </div>
+
+                <button class="generate-btn-large" id="generateBtn" onclick="startUpdate()">
+                    🔗 Run ExternalRef ID Update
+                </button>
+
+                <!-- Progress section -->
+                <div class="progress-section" id="progressSection">
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                    <p class="status-msg" id="statusMsg">Starting update…</p>
+                    <button class="toggle-log-btn" onclick="toggleLog()">Show Log</button>
+                    <pre class="log-box" id="logBox"></pre>
+                </div>
+
+                <!-- Success section (shown after completion) -->
+                <div class="success-card" id="successCard">
+                    <h4>✅ Update Completed Successfully</h4>
+                    <p id="successMsg">ExternalRef IDs have been updated in Azure DevOps.</p>
+                </div>
+
+                <!-- Download results button (shown after completion) -->
+                <a id="downloadBtn" class="download-btn" href="/api/download-mpoc-extref-results" download>
+                    ⬇️ Download Results CSV
+                </a>
+
+                <a href="index.html" class="back-button" style="margin-top:20px; display:inline-block;">← Back to Home</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let pollTimer = null;
+
+        // Pre-populate Query ID from settings on page load
+        (async () => {
+            try {
+                const res = await fetch('/api/get-mpoc-extref-settings');
+                const data = await res.json();
+                if (data.success && data.settings && data.settings.query_id) {
+                    document.getElementById('queryIdInput').value = data.settings.query_id;
+                }
+            } catch (e) { /* ignore */ }
+        })();
+
+        async function saveQueryId() {
+            const queryId = document.getElementById('queryIdInput').value.trim();
+            const saveMsg = document.getElementById('saveStatusMsg');
+            const saveBtn = document.getElementById('saveQueryIdBtn');
+
+            if (!queryId) {
+                saveMsg.style.display = 'block';
+                saveMsg.style.color = '#dc2626';
+                saveMsg.textContent = '\u274c Please enter a Query ID before saving.';
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = 'Saving…';
+            saveMsg.style.display = 'none';
+
+            try {
+                const res = await fetch('/api/update-mpoc-extref-settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query_id: queryId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    saveMsg.style.display = 'block';
+                    saveMsg.style.color = '#059669';
+                    saveMsg.textContent = '\u2705 Query ID saved successfully.';
+                } else {
+                    saveMsg.style.display = 'block';
+                    saveMsg.style.color = '#dc2626';
+                    saveMsg.textContent = '\u274c ' + (data.error || 'Failed to save.');
+                }
+            } catch (err) {
+                saveMsg.style.display = 'block';
+                saveMsg.style.color = '#dc2626';
+                saveMsg.textContent = '\u274c Could not connect to server.';
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '\ud83d\udcbe Save';
+                setTimeout(() => { saveMsg.style.display = 'none'; }, 4000);
+            }
+        }
+
+        async function startUpdate() {
+            const btn = document.getElementById('generateBtn');
+            const progressSection = document.getElementById('progressSection');
+            const successCard = document.getElementById('successCard');
+            const statusMsg = document.getElementById('statusMsg');
+            const progressBar = document.getElementById('progressBar');
+            const queryId = document.getElementById('queryIdInput').value.trim();
+
+            if (!queryId) {
+                alert('Please enter an ADO Query ID before running.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Running…';
+            successCard.style.display = 'none';
+            statusMsg.className = 'status-msg';
+            statusMsg.textContent = 'Starting update…';
+            progressSection.style.display = 'block';
+            progressBar.style.animation = 'progress-pulse 1.5s ease-in-out infinite';
+            progressBar.style.background = 'linear-gradient(90deg, #f59e0b, #d97706)';
+            document.getElementById('logBox').style.display = 'none';
+
+            try {
+                const res = await fetch('/api/generate-mpoc-extref', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query_id: queryId })
+                });
+                const data = await res.json();
+
+                if (!data.success) {
+                    showError(data.error || 'Failed to start update');
+                    return;
+                }
+
+                pollTimer = setInterval(pollStatus, 4000);
+
+            } catch (err) {
+                showError('Could not connect to server: ' + err.message);
+            }
+        }
+
+        async function pollStatus() {
+            try {
+                const res = await fetch('/api/check-mpoc-extref');
+                const data = await res.json();
+
+                if (data.log) {
+                    const logBox = document.getElementById('logBox');
+                    logBox.textContent = data.log;
+                    logBox.scrollTop = logBox.scrollHeight;
+
+                    const lines = data.log.split('\n').filter(l => l.trim());
+                    const last = lines[lines.length - 1] || '';
+                    document.getElementById('statusMsg').textContent = last.substring(0, 120);
+                }
+
+                if (!data.in_progress) {
+                    clearInterval(pollTimer);
+                    if (data.error) {
+                        showError(data.error);
+                    } else {
+                        showSuccess(data.last_run);
+                    }
+                }
+
+            } catch (err) {
+                // network hiccup – keep polling
+            }
+        }
+
+        function showSuccess(lastRun) {
+            const btn = document.getElementById('generateBtn');
+            const successCard = document.getElementById('successCard');
+            const statusMsg = document.getElementById('statusMsg');
+            const progressBar = document.getElementById('progressBar');
+            const downloadBtn = document.getElementById('downloadBtn');
+
+            progressBar.style.animation = 'none';
+            progressBar.style.background = '#10b981';
+
+            statusMsg.className = 'status-msg success';
+            statusMsg.textContent = 'Update completed successfully!';
+
+            btn.disabled = false;
+            btn.textContent = '🔗 Run Again';
+
+            successCard.style.display = 'block';
+            downloadBtn.style.display = 'flex';
+            if (lastRun) {
+                document.getElementById('successMsg').textContent =
+                    `ExternalRef IDs updated at ${lastRun}. Download the CSV results below.`;
+            }
+        }
+
+        function showError(msg) {
+            const btn = document.getElementById('generateBtn');
+            const statusMsg = document.getElementById('statusMsg');
+            const progressBar = document.getElementById('progressBar');
+            const logBox = document.getElementById('logBox');
+
+            progressBar.style.animation = 'none';
+            progressBar.style.background = '#ef4444';
+
+            statusMsg.className = 'status-msg error';
+            statusMsg.textContent = '❌ Error: ' + msg;
+
+            logBox.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = '🔗 Retry';
+        }
+
+        function toggleLog() {
+            const logBox = document.getElementById('logBox');
+            const toggleBtn = document.querySelector('.toggle-log-btn');
+            if (logBox.style.display === 'none' || logBox.style.display === '') {
+                logBox.style.display = 'block';
+                toggleBtn.textContent = 'Hide Log';
+            } else {
+                logBox.style.display = 'none';
+                toggleBtn.textContent = 'Show Log';
+            }
+        }
+
+        // On load – resume if already running and restore last query id
+        (async () => {
+            try {
+                const res = await fetch('/api/check-mpoc-extref');
+                const data = await res.json();
+
+                if (data.in_progress) {
+                    document.getElementById('generateBtn').disabled = true;
+                    document.getElementById('generateBtn').textContent = '⏳ Running…';
+                    document.getElementById('progressSection').style.display = 'block';
+                    pollTimer = setInterval(pollStatus, 4000);
+                } else if (data.last_run) {
+                    const successCard = document.getElementById('successCard');
+                    successCard.style.display = 'block';
+                    document.getElementById('successMsg').textContent =
+                        `Last run: ${data.last_run}. Download the CSV results below.`;
+                    if (data.last_csv) {
+                        document.getElementById('downloadBtn').style.display = 'flex';
+                    }
+                }
+            } catch (e) { /* ignore */ }
+        })();
+    </script>
+</body>
+</html>

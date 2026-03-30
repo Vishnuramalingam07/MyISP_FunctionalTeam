@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Data Transfer - MyISP Internal Tools</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>🤖 AI Data Transfer</h1>
+            <p>Excel macro tool for automated data transfer</p>
+        </div>
+
+        <div class="report-content">
+            <div class="report-info">
+                <h3>About AI Data Transfer</h3>
+                <ul>
+                    <li>Automated regression data processing</li>
+                    <li>Macro-enabled Excel workbook</li>
+                    <li>Download or run directly</li>
+                    <li>Enable macros when prompted</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 30px;">
+                <h3>Choose an option:</h3>
+                
+                <div style="display: flex; gap: 20px; margin-top: 20px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <a href="/api/download-macro" class="generate-btn" style="display: block; text-align: center; text-decoration: none; padding: 15px;">
+                            📥 Download Macro File
+                        </a>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                            Downloads Regression_Data.xlsm to your Downloads folder
+                        </p>
+                    </div>
+
+                    <div style="flex: 1; min-width: 250px;">
+                        <button onclick="runMacro()" class="generate-btn" id="runMacroBtn" style="width: 100%; padding: 15px;">
+                            ▶️ Run Macro
+                        </button>
+                        <p style="margin-top: 10px; font-size: 0.9em; color: #666;">
+                            Opens Regression_Data.xlsm from your Downloads folder
+                        </p>
+                        <p id="runMacroStatus" style="margin-top: 10px; font-size: 0.9em; display: none;"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 40px; padding: 15px; background-color: #e7f3ff; border-radius: 8px; border-left: 4px solid #0066cc;">
+                <h4 style="margin-top: 0; color: #004085;">ℹ️ How to Use:</h4>
+                <ul style="color: #004085; margin-bottom: 0;">
+                    <li><strong>Step 1:</strong> Click "Download Macro File" to download the Excel file</li>
+                    <li><strong>Step 2:</strong> Click "Run Macro" to open the downloaded file</li>
+                    <li>The file will be automatically unblocked when you click "Run Macro"</li>
+                    <li>The file is saved in your Downloads folder</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background-color: #fff3cd; border-radius: 8px; border-left: 4px solid #ffc107;">
+                <h4 style="margin-top: 0; color: #856404;">⚠️ Important Notes:</h4>
+                <ul style="color: #856404; margin-bottom: 5px;">
+                    <li>After opening, click "Enable Content" or "Enable Macros" in Excel</li>
+                    <li>Make sure Excel is installed on your computer</li>
+                    <li>The macro requires permissions to access Azure DevOps data</li>
+                </ul>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background-color: #f8d7da; border-radius: 8px; border-left: 4px solid #dc3545;">
+                <h4 style="margin-top: 0; color: #721c24;">🔒 If Macros Are Still Blocked (Manual Fix):</h4>
+                <ol style="color: #721c24; margin-bottom: 0; line-height: 1.8;">
+                    <li>Go to your Downloads folder: <code>C:\Users\{YourName}\Downloads</code></li>
+                    <li>Right-click on <strong>Regression_Data.xlsm</strong></li>
+                    <li>Select <strong>"Properties"</strong> from the menu</li>
+                    <li>At the bottom, check the box that says <strong>"Unblock"</strong></li>
+                    <li>Click <strong>"Apply"</strong> then <strong>"OK"</strong></li>
+                    <li>Now open the file - macros should work!</li>
+                </ol>
+            </div>
+
+            <a href="index.html" class="back-button">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        async function runMacro() {
+            const btn = document.getElementById('runMacroBtn');
+            const status = document.getElementById('runMacroStatus');
+            
+            // Disable button and show loading
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Opening Excel...';
+            status.style.display = 'block';
+            status.style.color = '#0066cc';
+            status.textContent = '📂 Looking for file in Downloads folder...';
+            
+            try {
+                const response = await fetch('/api/run-macro');
+                const result = await response.json();
+                
+                if (result.success) {
+                    status.style.color = '#28a745';
+                    status.innerHTML = '✅ Excel file opened successfully!<br><small>File location: ' + result.file_path + '</small>';
+                } else {
+                    status.style.color = '#dc3545';
+                    if (response.status === 404) {
+                        status.innerHTML = '❌ File not found in Downloads folder!<br><small>Please download the file first using "Download Macro File" button.</small>';
+                    } else {
+                        status.innerHTML = '❌ Error: ' + result.error;
+                    }
+                }
+            } catch (error) {
+                status.style.color = '#dc3545';
+                status.textContent = '❌ Network error: ' + error.message;
+            }
+            
+            // Re-enable button after 5 seconds
+            setTimeout(() => {
+                btn.disabled = false;
+                btn.innerHTML = '▶️ Run Macro';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

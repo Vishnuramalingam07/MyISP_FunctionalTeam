@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Regression Report - MyISP Internal Tools</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>🔄 Regression Report</h1>
+            <p>View regression test results and analysis</p>
+        </div>
+
+        <div class="report-content">
+            <div class="report-info">
+                <h3>About Regression Report</h3>
+                <ul>
+                    <li>Analyze regression test results</li>
+                    <li>Compare test runs across builds</li>
+                    <li>Identify failing test cases</li>
+                    <li>Track test coverage metrics</li>
+                </ul>
+            </div>
+
+            <div class="report-form" id="regressionReportForm">
+                <div class="form-group">
+                    <p style="margin-bottom: 20px; color: #555;">
+                        Click the button below to generate the latest regression execution report from Azure DevOps.
+                    </p>
+                </div>
+
+                <button type="button" id="generateBtn" class="generate-btn">
+                    <span id="btnText">Generate Report</span>
+                </button>
+
+                <div id="statusMessage" style="margin-top: 20px; display: none;"></div>
+            </div>
+
+            <a href="index.html" class="back-button">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        const generateBtn = document.getElementById('generateBtn');
+        const btnText = document.getElementById('btnText');
+        const statusMessage = document.getElementById('statusMessage');
+
+        generateBtn.addEventListener('click', async function() {
+            // Disable button and show loading state
+            generateBtn.disabled = true;
+            btnText.textContent = '⏳ Generating Report...';
+            statusMessage.style.display = 'block';
+            statusMessage.style.color = '#0066cc';
+            statusMessage.innerHTML = '🔄 Fetching test data from Azure DevOps...<br>This may take 1-2 minutes. Please wait...';
+
+            try {
+                // Call the API to generate the report
+                const response = await fetch('/api/generate-regression-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    statusMessage.style.color = '#28a745';
+                    statusMessage.innerHTML = '✅ Report generated successfully!<br>Opening report in new tab...';
+                    
+                    // Open the generated report in a new tab
+                    setTimeout(() => {
+                        const newTab = window.open('/' + result.report_file, '_blank');
+                        
+                        // Re-enable button for generating another report
+                        generateBtn.disabled = false;
+                        btnText.textContent = 'Generate Report';
+                        
+                        // Check if popup was blocked
+                        if (newTab === null || typeof(newTab) === 'undefined') {
+                            statusMessage.innerHTML = '✅ Report generated! <a href="/' + result.report_file + '" target="_blank" style="color: #0066cc; text-decoration: underline;">Click here to open report</a> (popup blocked)';
+                        } else {
+                            statusMessage.innerHTML = '✅ Report opened in new tab!';
+                        }
+                    }, 1000);
+                } else {
+                    statusMessage.style.color = '#dc3545';
+                    statusMessage.innerHTML = '❌ Error: ' + (result.error || 'Unknown error occurred');
+                    
+                    // Re-enable button
+                    generateBtn.disabled = false;
+                    btnText.textContent = 'Generate Report';
+                }
+            } catch (error) {
+                statusMessage.style.color = '#dc3545';
+                statusMessage.innerHTML = '❌ Network error: ' + error.message;
+                
+                // Re-enable button
+                generateBtn.disabled = false;
+                btnText.textContent = 'Generate Report';
+            }
+        });
+
+        // Check if the script is available on page load
+        window.addEventListener('load', async function() {
+            try {
+                const response = await fetch('/api/check-script');
+                const result = await response.json();
+                
+                if (!result.available) {
+                    generateBtn.disabled = true;
+                    btnText.textContent = 'Script Not Found';
+                    statusMessage.style.display = 'block';
+                    statusMessage.style.color = '#dc3545';
+                    statusMessage.textContent = '⚠️ Regression report script not found. Please ensure RegReport 1_Updated 1.py exists in the Regression_Report folder.';
+                }
+            } catch (error) {
+                console.error('Failed to check script availability:', error);
+            }
+        });
+    </script>
+</body>
+</html>

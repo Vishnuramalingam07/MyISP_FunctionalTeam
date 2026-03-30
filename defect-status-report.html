@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Defect Status Report - MyISP Internal Tools</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>🐛 Defect Status Report</h1>
+            <p>Track defect status and resolution metrics</p>
+        </div>
+
+        <div class="report-content">
+            <div class="report-info">
+                <h3>About Defect Status Report</h3>
+                <ul>
+                    <li>Monitor defect lifecycle and resolution</li>
+                    <li>Track defect aging and priority</li>
+                    <li>Analyze defect trends and patterns</li>
+                    <li>Generate quality metrics reports</li>
+                </ul>
+            </div>
+
+            <form class="report-form" id="defectStatusReportForm">
+                <div class="form-group">
+                    <label for="defectStatus">Defect Status:</label>
+                    <select id="defectStatus" name="defectStatus" required>
+                        <option value="">Select Status</option>
+                        <option value="all">All Status</option>
+                        <option value="open">Open</option>
+                        <option value="in-progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                        <option value="closed">Closed</option>
+                        <option value="reopened">Reopened</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="severity">Severity:</label>
+                    <select id="severity" name="severity" required>
+                        <option value="">Select Severity</option>
+                        <option value="all">All Severities</option>
+                        <option value="critical">Critical</option>
+                        <option value="major">Major</option>
+                        <option value="minor">Minor</option>
+                        <option value="trivial">Trivial</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="assignedTo">Assigned To:</label>
+                    <select id="assignedTo" name="assignedTo" required>
+                        <option value="">Select Assignee</option>
+                        <option value="all">All Team Members</option>
+                        <option value="unassigned">Unassigned</option>
+                        <option value="dev1">Developer 1</option>
+                        <option value="dev2">Developer 2</option>
+                        <option value="dev3">Developer 3</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="module">Module:</label>
+                    <select id="module" name="module" required>
+                        <option value="">Select Module</option>
+                        <option value="all">All Modules</option>
+                        <option value="frontend">Frontend</option>
+                        <option value="backend">Backend</option>
+                        <option value="api">API</option>
+                        <option value="database">Database</option>
+                        <option value="infrastructure">Infrastructure</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="reportDate">Report Date:</label>
+                    <input type="date" id="reportDate" name="reportDate" required>
+                </div>
+
+                <button type="submit" class="generate-btn">Generate Report</button>
+            </form>
+
+            <a href="index.html" class="back-button">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('defectStatusReportForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Defect Status Report generation feature will be implemented here.\n\nSelected Options:\n' +
+                  'Status: ' + document.getElementById('defectStatus').value + '\n' +
+                  'Severity: ' + document.getElementById('severity').value + '\n' +
+                  'Assigned To: ' + document.getElementById('assignedTo').value + '\n' +
+                  'Module: ' + document.getElementById('module').value + '\n' +
+                  'Date: ' + document.getElementById('reportDate').value);
+        });
+
+        // Set today's date as default
+        document.getElementById('reportDate').valueAsDate = new Date();
+    </script>
+</body>
+</html>

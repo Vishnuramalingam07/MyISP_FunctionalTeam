@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADO Testcase Upload - MyISP Internal Tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .upload-zone {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 36px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            background: #f8f9ff;
+            margin-bottom: 8px;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            background: #eef0ff;
+            border-color: #764ba2;
+        }
+        .upload-zone .upload-icon { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+        .upload-zone p { color: #555; margin: 0; font-size: 0.95rem; }
+        .upload-zone .file-name {
+            margin-top: 10px; font-weight: 600; color: #667eea;
+            font-size: 0.9rem; word-break: break-all;
+        }
+        #fileInput { display: none; }
+
+        .optional-fields {
+            display: flex; gap: 16px; flex-wrap: wrap;
+        }
+        .optional-fields .form-group { flex: 1; min-width: 140px; }
+        .optional-fields .form-group input {
+            padding: 9px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+        .optional-fields .form-group input:focus {
+            outline: none; border-color: #667eea;
+        }
+        .optional-fields .form-group label {
+            font-size: 0.85rem; color: #555; margin-bottom: 5px; display: block; font-weight: 600;
+        }
+        .optional-hint { font-size: 0.78rem; color: #888; margin-top: 4px; }
+
+        .result-box {
+            display: none;
+            margin-top: 20px;
+            padding: 20px 24px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .result-box.success {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .result-box.error {
+            background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+            color: white;
+        }
+        .result-box p { margin: 0 0 12px; font-weight: 600; font-size: 1rem; }
+        .result-box a, .result-box button.open-btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 24px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-family: inherit;
+            transition: transform 0.2s;
+        }
+        .result-box a:hover, .result-box button.open-btn:hover { transform: translateY(-2px); }
+
+        .progress-log {
+            margin-top: 14px;
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 0.78rem;
+            font-family: monospace;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+            white-space: pre-wrap;
+            display: none;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 600px) { .info-grid { grid-template-columns: 1fr; } }
+        .info-item {
+            background: #f8f9fa;
+            border-left: 3px solid #667eea;
+            padding: 10px 14px;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.88rem;
+            color: #444;
+        }
+        .info-item strong { color: #333; }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>📋 ADO Testcase Upload</h1>
+            <p>Upload Excel test cases directly to Azure DevOps Test Suite</p>
+        </div>
+
+        <div class="report-content">
+            <div class="report-info">
+                <h3>About ADO Testcase Upload</h3>
+                <div class="info-grid">
+                    <div class="info-item">📁 <strong>Excel Format:</strong> Sheet named "Test Cases"</div>
+                    <div class="info-item">🏢 <strong>Organization:</strong> accenturecio08</div>
+                    <div class="info-item">📌 <strong>Project:</strong> AutomationProcess_29697</div>
+                    <div class="info-item">📎 <strong>File Types:</strong> .xlsx, .xlsm, .xls</div>
+                </div>
+                <ul>
+                    <li>Reads test cases from the Excel workbook and uploads them to the specified ADO Test Suite</li>
+                    <li>Links each test case to its User Story (from the <em>User_StoryID</em> column)</li>
+                    <li>Assigns test cases to the configured Lead and sets all required fields</li>
+                    <li>Generates a detailed upload summary report after completion</li>
+                </ul>
+            </div>
+
+            <div class="report-form" style="max-width: 640px;">
+                <!-- File upload zone -->
+                <div class="form-group">
+                    <label for="fileInput" style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">
+                        Select Excel File <span style="color: #ef4444;">*</span>
+                    </label>
+                    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                        <span class="upload-icon">📂</span>
+                        <p>Click to browse or drag &amp; drop your Excel file here</p>
+                        <div class="file-name" id="fileNameDisplay" style="display:none;"></div>
+                    </div>
+                    <input type="file" id="fileInput" accept=".xlsx,.xlsm,.xls" />
+                </div>
+
+                <!-- Optional overrides -->
+                <div class="form-group">
+                    <label style="font-weight: 600; color: #333; margin-bottom: 8px; display: block;">
+                        Override Plan / Suite ID <span style="color: #888; font-weight: 400;">(optional)</span>
+                    </label>
+                    <div class="optional-fields">
+                        <div class="form-group">
+                            <label for="planId">Test Plan ID</label>
+                            <input type="number" id="planId" placeholder="e.g. 4319862" min="1" />
+                        </div>
+                        <div class="form-group">
+                            <label for="suiteId">Test Suite ID</label>
+                            <input type="number" id="suiteId" placeholder="e.g. 4319870" min="1" />
+                        </div>
+                    </div>
+                    <p class="optional-hint">Leave blank to use the defaults configured in the upload script.</p>
+                </div>
+
+                <button class="generate-btn" id="uploadBtn" onclick="startUpload()">
+                    ⬆️ Upload Test Cases
+                </button>
+
+                <!-- Result box -->
+                <div class="result-box" id="resultBox">
+                    <p id="resultMessage"></p>
+                    <button class="open-btn" id="openSummaryBtn" onclick="openSummary()">
+                        📊 View Upload Summary
+                    </button>
+                </div>
+
+                <!-- Progress log (shown while uploading) -->
+                <div class="progress-log" id="progressLog"></div>
+            </div>
+
+            <a href="index.html" class="back-button">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        let summaryUrl = null;
+        let pollInterval = null;
+
+        // Drag-and-drop support
+        const uploadZone = document.getElementById('uploadZone');
+        const fileInput  = document.getElementById('fileInput');
+
+        uploadZone.addEventListener('dragover', e => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+        uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+        uploadZone.addEventListener('drop', e => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                showFileName(e.dataTransfer.files[0].name);
+            }
+        });
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length) showFileName(fileInput.files[0].name);
+        });
+
+        function showFileName(name) {
+            const display = document.getElementById('fileNameDisplay');
+            display.textContent = '✅ ' + name;
+            display.style.display = 'block';
+        }
+
+        async function startUpload() {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select an Excel file first.');
+                return;
+            }
+
+            const btn = document.getElementById('uploadBtn');
+            const resultBox = document.getElementById('resultBox');
+            const progressLog = document.getElementById('progressLog');
+
+            // Reset UI
+            resultBox.style.display = 'none';
+            resultBox.className = 'result-box';
+            progressLog.style.display = 'none';
+            progressLog.textContent = '';
+            summaryUrl = null;
+            if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Uploading...';
+            btn.style.opacity = '0.7';
+
+            progressLog.style.display = 'block';
+            progressLog.textContent = 'Starting upload...\n';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const planId  = document.getElementById('planId').value.trim();
+                const suiteId = document.getElementById('suiteId').value.trim();
+                if (planId)  formData.append('plan_id',  planId);
+                if (suiteId) formData.append('suite_id', suiteId);
+
+                progressLog.textContent += `File: ${file.name}\n`;
+                if (planId)  progressLog.textContent += `Plan ID override: ${planId}\n`;
+                if (suiteId) progressLog.textContent += `Suite ID override: ${suiteId}\n`;
+                progressLog.textContent += 'Sending to server...\n';
+
+                const response = await fetch('/api/ado-upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // Safely parse JSON — if server returns empty/HTML body, give a clear error
+                const rawText = await response.text();
+                let data;
+                try {
+                    data = JSON.parse(rawText);
+                } catch (parseErr) {
+                    const preview = rawText.substring(0, 300) || '(empty response)';
+                    throw new Error(`Server returned a non-JSON response (HTTP ${response.status}):\n${preview}`);
+                }
+
+                if (!data.success && !data.started) {
+                    // Immediate failure (bad file, already in progress, etc.)
+                    throw new Error(data.error || 'Upload failed to start.');
+                }
+
+                // Upload started in background — poll for completion
+                progressLog.textContent += 'Upload running on server (this may take a few minutes)...\n';
+                btn.innerHTML = '⏳ Processing...';
+                pollForCompletion(btn, progressLog, resultBox);
+
+            } catch (error) {
+                console.error('Upload error:', error);
+                progressLog.textContent += '\nError: ' + error.message;
+                showResult(resultBox, false, '❌ ' + error.message, null);
+                resetBtn(btn);
+            }
+        }
+
+        function pollForCompletion(btn, progressLog, resultBox) {
+            let pollCount = 0;
+            const maxPolls = 360; // 360 × 5s = 30 minutes max
+
+            pollInterval = setInterval(async () => {
+                pollCount++;
+                const dots = '.'.repeat((pollCount % 3) + 1);
+                btn.innerHTML = `⏳ Processing${dots}`;
+
+                try {
+                    const resp = await fetch('/api/ado-upload-status', { cache: 'no-cache' });
+                    const status = await resp.json();
+
+                    // Stream log output
+                    if (status.log) {
+                        progressLog.textContent = status.log;
+                        progressLog.scrollTop = progressLog.scrollHeight;
+                    }
+
+                    if (!status.in_progress) {
+                        clearInterval(pollInterval);
+                        pollInterval = null;
+
+                        if (status.error && !status.result) {
+                            showResult(resultBox, false, '❌ ' + status.error, null);
+                            resetBtn(btn);
+                            return;
+                        }
+
+                        summaryUrl = status.summary_url || null;
+                        const succeeded = status.success;
+                        const msg = status.message ||
+                            `${status.success_count}/${status.total} test case(s) uploaded successfully.`;
+
+                        if (status.output) {
+                            progressLog.textContent = status.output;
+                            progressLog.scrollTop = progressLog.scrollHeight;
+                        }
+
+                        showResult(resultBox, succeeded, succeeded ? msg : ('⚠️ ' + msg + (status.error ? '\n' + status.error : '')), summaryUrl);
+                        btn.innerHTML = succeeded ? '✅ Upload Complete' : '⚠️ Upload Done (with issues)';
+                        btn.style.backgroundColor = succeeded ? '#10b981' : '#f59e0b';
+                        setTimeout(() => resetBtn(btn), 3000);
+                    }
+
+                } catch (pollErr) {
+                    console.warn('Poll error:', pollErr);
+                }
+
+                if (pollCount >= maxPolls) {
+                    clearInterval(pollInterval);
+                    pollInterval = null;
+                    showResult(resultBox, false, '⏱️ Timed out waiting for server. The upload may still be running — check the server log.', null);
+                    resetBtn(btn);
+                }
+            }, 5000);
+        }
+
+        function showResult(resultBox, success, message, summaryUrl) {
+            resultBox.className = 'result-box ' + (success ? 'success' : 'error');
+            document.getElementById('resultMessage').textContent = message;
+            const openBtn = document.getElementById('openSummaryBtn');
+            openBtn.style.display = summaryUrl ? 'inline-flex' : 'none';
+            resultBox.style.display = 'block';
+            resultBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        function resetBtn(btn) {
+            setTimeout(() => {
+                btn.innerHTML = '⬆️ Upload Test Cases';
+                btn.style.backgroundColor = '';
+                btn.style.opacity = '';
+                btn.disabled = false;
+            }, 3000);
+        }
+
+        function openSummary() {
+            if (summaryUrl) window.open(summaryUrl, '_blank');
+        }
+    </script>
+</body>
+</html>
+    </script>
+</body>
+</html>

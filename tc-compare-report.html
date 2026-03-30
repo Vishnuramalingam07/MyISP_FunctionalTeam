@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match TFS &amp; SP Report - MyISP Internal Tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .status-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px 32px;
+            box-shadow: 0 4px 20px rgba(244,63,94,0.10);
+            margin-bottom: 24px;
+        }
+        .generate-btn-large {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 16px 36px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.1s;
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+        .generate-btn-large:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .generate-btn-large:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .open-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 32px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            width: 100%;
+            justify-content: center;
+            margin-top: 6px;
+            transition: opacity 0.2s;
+        }
+        .open-btn:hover { opacity: 0.9; }
+        .progress-section {
+            display: none;
+            margin-top: 20px;
+        }
+        .progress-bar-track {
+            background: #e0e4f0;
+            border-radius: 8px;
+            height: 10px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #f43f5e, #e11d48);
+            animation: progress-pulse 1.5s ease-in-out infinite;
+            width: 100%;
+        }
+        @keyframes progress-pulse {
+            0%   { opacity: 1; }
+            50%  { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .status-msg {
+            font-size: 0.95rem;
+            color: #555;
+            margin: 8px 0;
+        }
+        .status-msg.error   { color: #dc2626; }
+        .status-msg.success { color: #059669; font-weight: 600; }
+        .steps-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .steps-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+            color: #444;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .steps-list li:last-child { border-bottom: none; }
+        .log-box {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            border-radius: 8px;
+            padding: 14px;
+            font-size: 0.78rem;
+            max-height: 220px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            display: none;
+            margin-top: 14px;
+        }
+        .toggle-log-btn {
+            background: none;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 5px 14px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            margin-top: 10px;
+            color: #555;
+        }
+        .report-header {
+            background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+        }
+        .warning-note {
+            background: #fff8e1;
+            border-left: 4px solid #f59e0b;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: #92400e;
+            margin-top: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>🔍 Match TFS &amp; SP Report</h1>
+            <p>Compare ADO (TFS) test execution counts with SharePoint PT status data</p>
+        </div>
+
+        <div class="report-content">
+
+            <!-- Info card -->
+            <div class="status-card report-info">
+                <h3>What this generates</h3>
+                <ul class="steps-list">
+                    <li>📥 Downloads latest PT status Excel from SharePoint (auto)</li>
+                    <li>🔗 Connects to Azure DevOps and fetches all test plan suites</li>
+                    <li>⚡ Collects test points from all suites in parallel</li>
+                    <li>📊 Compares ADO execution counts vs SharePoint PT status data</li>
+                    <li>🎯 Identifies Planned Automation vs Not Automated test breakdown</li>
+                    <li>🌐 Creates interactive HTML comparison report</li>
+                </ul>
+                <div class="warning-note">
+                    ⏱️ This report may take <strong>5–15 minutes</strong> to generate due to SharePoint download and ADO API calls. Please keep this tab open.
+                </div>
+            </div>
+
+            <!-- Action card -->
+            <div class="status-card">
+                <button class="generate-btn-large" id="generateBtn" onclick="startGeneration()">
+                    ⚡ Generate Match TFS &amp; SP Report
+                </button>
+
+                <!-- Progress section -->
+                <div class="progress-section" id="progressSection">
+                    <div class="progress-bar-track">
+                        <div class="progress-bar-fill" id="progressBar"></div>
+                    </div>
+                    <p class="status-msg" id="statusMsg">Starting report generation…</p>
+                    <button class="toggle-log-btn" onclick="toggleLog()">Show Log</button>
+                    <pre class="log-box" id="logBox"></pre>
+                </div>
+
+                <!-- Open report button (shown after success) -->
+                <a class="open-btn" id="openReportBtn" href="#" target="_blank" style="display:none;">
+                    🚀 Open Match TFS &amp; SP Report
+                </a>
+
+                <a href="index.html" class="back-button" style="margin-top:20px; display:inline-block;">← Back to Home</a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        let pollTimer = null;
+
+        async function startGeneration() {
+            const btn = document.getElementById('generateBtn');
+            const progressSection = document.getElementById('progressSection');
+            const openBtn = document.getElementById('openReportBtn');
+            const statusMsg = document.getElementById('statusMsg');
+            const progressBar = document.getElementById('progressBar');
+
+            btn.disabled = true;
+            btn.textContent = '⏳ Generating…';
+            openBtn.style.display = 'none';
+            statusMsg.className = 'status-msg';
+            statusMsg.textContent = 'Starting report generation…';
+            progressSection.style.display = 'block';
+            progressBar.style.animation = 'progress-pulse 1.5s ease-in-out infinite';
+            progressBar.style.background = 'linear-gradient(90deg, #f43f5e, #e11d48)';
+            document.getElementById('logBox').style.display = 'none';
+
+            try {
+                const res = await fetch('/api/generate-tc-compare-report', { method: 'POST' });
+                const data = await res.json();
+
+                if (!data.success) {
+                    showError(data.error || 'Failed to start generation');
+                    return;
+                }
+
+                // Start polling every 5 seconds (long-running script)
+                pollTimer = setInterval(pollStatus, 5000);
+
+            } catch (err) {
+                showError('Could not connect to server: ' + err.message);
+            }
+        }
+
+        async function pollStatus() {
+            try {
+                const res = await fetch('/api/check-tc-compare-report');
+                const data = await res.json();
+
+                // Update log
+                if (data.log) {
+                    const logBox = document.getElementById('logBox');
+                    logBox.textContent = data.log;
+                    logBox.scrollTop = logBox.scrollHeight;
+                }
+
+                // Show last meaningful log line as status
+                if (data.log) {
+                    const lines = data.log.split('\n').filter(l => l.trim());
+                    const last = lines[lines.length - 1] || '';
+                    document.getElementById('statusMsg').textContent = last.substring(0, 120);
+                }
+
+                if (!data.in_progress) {
+                    clearInterval(pollTimer);
+                    if (data.error) {
+                        showError(data.error);
+                    } else {
+                        showSuccess(data.last_generated);
+                    }
+                }
+
+            } catch (err) {
+                // network hiccup – keep polling
+            }
+        }
+
+        function showSuccess(reportPath) {
+            const btn = document.getElementById('generateBtn');
+            const openBtn = document.getElementById('openReportBtn');
+            const statusMsg = document.getElementById('statusMsg');
+            const progressBar = document.getElementById('progressBar');
+
+            progressBar.style.animation = 'none';
+            progressBar.style.background = '#10b981';
+
+            statusMsg.className = 'status-msg success';
+            statusMsg.textContent = 'Report generated successfully!';
+
+            btn.disabled = false;
+            btn.innerHTML = '⚡ Regenerate Match TFS &amp; SP Report';
+
+            if (reportPath) {
+                openBtn.href = '/' + reportPath;
+                openBtn.style.display = 'flex';
+            }
+        }
+
+        function showError(msg) {
+            const btn = document.getElementById('generateBtn');
+            const statusMsg = document.getElementById('statusMsg');
+            const progressBar = document.getElementById('progressBar');
+            const logBox = document.getElementById('logBox');
+
+            progressBar.style.animation = 'none';
+            progressBar.style.background = '#ef4444';
+
+            statusMsg.className = 'status-msg error';
+            statusMsg.textContent = 'Error: ' + msg;
+
+            logBox.style.display = 'block';
+            btn.disabled = false;
+            btn.innerHTML = '⚡ Retry Generation';
+        }
+
+        function toggleLog() {
+            const logBox = document.getElementById('logBox');
+            const toggleBtn = document.querySelector('.toggle-log-btn');
+            if (logBox.style.display === 'none' || logBox.style.display === '') {
+                logBox.style.display = 'block';
+                toggleBtn.textContent = 'Hide Log';
+            } else {
+                logBox.style.display = 'none';
+                toggleBtn.textContent = 'Show Log';
+            }
+        }
+
+        // On load – check if a previous report was generated this session
+        (async () => {
+            try {
+                const res = await fetch('/api/check-tc-compare-report');
+                const data = await res.json();
+
+                if (data.in_progress) {
+                    // Still running from a previous trigger – resume polling
+                    document.getElementById('generateBtn').disabled = true;
+                    document.getElementById('generateBtn').textContent = '⏳ Generating…';
+                    document.getElementById('progressSection').style.display = 'block';
+                    pollTimer = setInterval(pollStatus, 5000);
+                } else if (data.last_generated) {
+                    const openBtn = document.getElementById('openReportBtn');
+                    openBtn.href = '/' + data.last_generated;
+                    openBtn.style.display = 'flex';
+                }
+            } catch (e) { /* ignore */ }
+        })();
+    </script>
+</body>
+</html>

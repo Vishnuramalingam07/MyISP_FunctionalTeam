@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Report - MyISP Internal Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.97);
+            border-radius: 24px;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.3);
+            padding: 48px 40px;
+            max-width: 520px;
+            width: 100%;
+            text-align: center;
+        }
+        .icon { font-size: 3rem; margin-bottom: 12px; }
+        h1 { color: #1a1a2e; font-size: 1.6rem; font-weight: 800; margin-bottom: 6px; }
+        .subtitle { color: #666; font-size: 0.9rem; margin-bottom: 32px; }
+
+        /* ── Spinner ── */
+        .spinner-wrap { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 24px; }
+        .spinner {
+            width: 56px; height: 56px;
+            border: 5px solid #eef0ff;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.9s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status-text { color: #5063a0; font-size: 1rem; font-weight: 600; }
+        .status-sub  { color: #999; font-size: 0.8rem; margin-top: 4px; }
+
+        /* ── Steps log ── */
+        .log-box {
+            background: #f8f9ff;
+            border: 1.5px solid #e0e4f5;
+            border-radius: 12px;
+            padding: 14px 16px;
+            text-align: left;
+            max-height: 180px;
+            overflow-y: auto;
+            margin-bottom: 24px;
+            font-size: 0.78rem;
+            color: #444;
+            display: none;
+        }
+        .log-box .log-line { padding: 2px 0; border-bottom: 1px solid #eee; }
+        .log-box .log-line:last-child { border-bottom: none; }
+
+        /* ── Success ── */
+        .success-badge {
+            display: none;
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            border-radius: 50%;
+            line-height: 72px;
+            font-size: 2rem;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 24px rgba(39,174,96,0.4);
+        }
+        /* ── Error ── */
+        .error-badge {
+            display: none;
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            border-radius: 50%;
+            line-height: 72px;
+            font-size: 2rem;
+            margin: 0 auto 16px;
+            box-shadow: 0 8px 24px rgba(231,76,60,0.4);
+        }
+        .error-detail {
+            display: none;
+            background: #fff5f5;
+            border: 1.5px solid #fecaca;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 0.78rem;
+            color: #b91c1c;
+            text-align: left;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 140px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 11px 24px; border: none; border-radius: 10px;
+            font-size: 0.88rem; font-weight: 700; cursor: pointer;
+            font-family: inherit; transition: all 0.25s; text-decoration: none;
+        }
+        .btn-primary { background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; box-shadow: 0 4px 14px rgba(102,126,234,0.4); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 7px 20px rgba(102,126,234,0.55); }
+        .btn-secondary { background: #f0f2ff; color: #5063a0; margin-left: 10px; }
+        .btn-secondary:hover { background: #e0e4ff; }
+
+        /* ── No-server notice ── */
+        .notice {
+            display: none;
+            background: #fffbeb;
+            border: 1.5px solid #fde68a;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 0.82rem;
+            color: #92400e;
+            margin-bottom: 20px;
+        }
+
+        .redirect-bar { color: #999; font-size: 0.78rem; margin-top: 12px; }
+        .redirect-bar span { font-weight: 700; color: #667eea; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="icon">&#128202;</div>
+    <h1>Attendance Report</h1>
+    <p class="subtitle">Syncing latest team data and holidays&hellip;</p>
+
+    <!-- Loading state -->
+    <div id="loadingState">
+        <div class="spinner-wrap">
+            <div class="spinner"></div>
+            <div>
+                <div class="status-text" id="statusText">Running update script&hellip;</div>
+                <div class="status-sub" id="statusSub">Reading Team Details, Locations &amp; Holidays from Excel</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Log box (shown after run) -->
+    <div class="log-box" id="logBox"></div>
+
+    <!-- Notice when accessed without server -->
+    <div class="notice" id="noServerNotice">
+        &#9888;&#65039; The Flask server is not running. The update script cannot be triggered automatically.
+        Please start <code>app.py</code> first, then reload this page.<br><br>
+        You can still open the tracker directly:
+    </div>
+
+    <!-- Success badge -->
+    <div class="success-badge" id="successBadge">&#10003;</div>
+
+    <!-- Error badge -->
+    <div class="error-badge" id="errorBadge">&#10007;</div>
+    <div class="error-detail" id="errorDetail"></div>
+
+    <!-- Action buttons (hidden until done) -->
+    <div id="actionBtns" style="display:none;">
+        <a class="btn btn-primary" href="/Attendance/team-attendance-tracker-sharepoint.html" id="openBtn">
+            &#128202; Open Attendance Tracker
+        </a>
+        <a class="btn btn-secondary" href="index.html">&#8592; Back</a>
+    </div>
+
+    <div class="redirect-bar" id="redirectBar" style="display:none;">
+        Redirecting in <span id="countdown">3</span>s&hellip;
+    </div>
+</div>
+
+<script>
+(function () {
+    // Use current origin to work across localhost and dev tunnels
+    const FLASK_BASE = window.location.origin;
+    const API = FLASK_BASE + '/api/run-attendance-update';
+    const TRACKER_PATH = FLASK_BASE + '/Attendance/team-attendance-tracker-sharepoint.html';
+
+    function el(id) { return document.getElementById(id); }
+
+    function showLog(output) {
+        if (!output) return;
+        const box = el('logBox');
+        box.style.display = 'block';
+        const lines = output.split('\n').filter(l => l.trim());
+        box.innerHTML = lines.map(l => `<div class="log-line">${escapeHtml(l)}</div>`).join('');
+    }
+
+    function escapeHtml(s) {
+        return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function startCountdown() {
+        el('redirectBar').style.display = 'block';
+        let n = 3;
+        el('countdown').textContent = n;
+        const t = setInterval(() => {
+            n--;
+            el('countdown').textContent = n;
+            if (n <= 0) { clearInterval(t); window.location.href = TRACKER_PATH; }
+        }, 1000);
+    }
+
+    function onSuccess(data) {
+        el('loadingState').style.display = 'none';
+        el('successBadge').style.display = 'block';
+        el('statusText').textContent = '✅ Update complete!';
+        showLog(data.output || '');
+        el('actionBtns').style.display = 'block';
+        startCountdown();
+    }
+
+    function onError(msg) {
+        el('loadingState').style.display = 'none';
+        el('errorBadge').style.display = 'block';
+        el('errorDetail').style.display = 'block';
+        el('errorDetail').textContent = msg;
+        el('actionBtns').style.display = 'block';
+    }
+
+    function noServer() {
+        el('loadingState').style.display = 'none';
+        el('noServerNotice').style.display = 'block';
+        el('actionBtns').style.display = 'block';
+    }
+
+    // If opened as file://, skip the API call
+    if (location.protocol === 'file:') {
+        noServer();
+        return;
+    }
+
+    // Probe Flask first; if it's not reachable fall back to noServer()
+    fetch(API, { method: 'POST', headers: { 'Content-Type': 'application/json' }, mode: 'cors' })
+        .then(res => {
+            // If the response isn't JSON (e.g. HTML 404 from a non-Flask server), treat as no-server
+            const ct = res.headers.get('content-type') || '';
+            if (!ct.includes('application/json')) {
+                noServer();
+                return Promise.reject(null); // skip further .then handlers
+            }
+            return res.json().then(data => ({ ok: res.ok, data }));
+        })
+        .then(({ ok, data }) => {
+            if (ok && data.success) {
+                onSuccess(data);
+            } else {
+                onError(data.error || 'Unknown error from server');
+            }
+        })
+        .catch(err => {
+            if (err === null) return; // already handled above by noServer()
+            // fetch failed entirely — server not reachable
+            if (err instanceof TypeError || err instanceof SyntaxError) {
+                noServer();
+            } else {
+                onError(String(err));
+            }
+        });
+})();
+</script>
+</body>
+</html>

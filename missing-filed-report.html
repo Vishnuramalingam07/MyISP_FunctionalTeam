@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missing Field Report - MyISP Internal Tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #reportLinkContainer a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>📋 Missing Field Report</h1>
+            <p>Track and identify missing filed items</p>
+        </div>
+
+        <div class="report-content">
+            <div class="report-info">
+                <h3>About Missing Field Report</h3>
+                <ul>
+                    <li>Identify missing or incomplete filed items</li>
+                    <li>Track documentation gaps</li>
+                    <li>Monitor compliance requirements</li>
+                    <li>Generate remediation reports</li>
+                </ul>
+            </div>
+
+            <div class="report-form">
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">Click the button below to generate the Missing Fields Report</p>
+                <button class="generate-btn" onclick="generateReport()">Generate Report</button>
+                
+                <!-- Report link container (hidden initially) -->
+                <div id="reportLinkContainer" style="display: none; margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; text-align: center;">
+                    <p style="color: white; font-weight: 600; margin-bottom: 14px; font-size: 16px;">✅ Report Generated Successfully!</p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <a id="reportLink" href="#" target="_blank"
+                           style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; background: white; color: #667eea; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s;">
+                            📊 Open Report
+                        </a>
+                        <button id="downloadBtn" onclick="downloadReport()"
+                           style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 15px rgba(16,185,129,0.4); cursor: pointer; transition: all 0.3s; font-family: inherit;"
+                           title="Downloads the HTML report to your local machine">
+                            ⬇️ Download HTML
+                        </button>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.75); font-size: 12px; margin-top: 10px;">⬇️ Saves directly to your local Downloads folder</p>
+                </div>
+            </div>
+
+            <a href="index.html" class="back-button">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        let pollInterval = null;
+        
+        async function generateReport() {
+            const submitBtn = document.querySelector('.generate-btn');
+            const originalText = submitBtn.innerHTML;
+            const reportLinkContainer = document.getElementById('reportLinkContainer');
+            const reportLink = document.getElementById('reportLink');
+            
+            // Hide any previous report link
+            reportLinkContainer.style.display = 'none';
+            
+            try {
+                // Disable button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '⏳ Starting Generation...';
+                submitBtn.style.opacity = '0.7';
+                
+                // Start the report generation (returns immediately)
+                const response = await fetch('/api/generate-missing-fields-report', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: 'no-cache'
+                });
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error: ${response.status} - ${errorText}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success && result.status === 'in_progress') {
+                    // Generation started, now poll for completion
+                    submitBtn.innerHTML = '⏳ Generating Report (fetching data from Azure DevOps)...';
+                    pollForCompletion(submitBtn, originalText, reportLinkContainer, reportLink);
+                } else if (!result.success) {
+                    throw new Error(result.error || 'Failed to start report generation');
+                }
+                
+            } catch (error) {
+                console.error('Error generating report:', error);
+                
+                // Show error state
+                submitBtn.innerHTML = '❌ Generation Failed';
+                submitBtn.style.backgroundColor = '#ef4444';
+                
+                let errorMessage = 'Unknown error occurred';
+                if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                alert('❌ Error generating report:\n\n' + errorMessage + '\n\nPlease try refreshing the page and generating again.');
+                
+                // Reset button after 3 seconds
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.style.backgroundColor = '';
+                    submitBtn.style.opacity = '';
+                    submitBtn.disabled = false;
+                }, 3000);
+            }
+        }
+        
+        async function pollForCompletion(submitBtn, originalText, reportLinkContainer, reportLink) {
+            let pollCount = 0;
+            const maxPolls = 60; // Maximum 5 minutes (60 * 5 seconds)
+            
+            pollInterval = setInterval(async () => {
+                pollCount++;
+                
+                try {
+                    const response = await fetch('/api/check-missing-fields-report-status', {
+                        method: 'GET',
+                        cache: 'no-cache'
+                    });
+                    
+                    const status = await response.json();
+                    
+                    if (status.status === 'completed') {
+                        // Generation completed successfully
+                        clearInterval(pollInterval);
+                        
+                        submitBtn.innerHTML = '✅ Report Generated!';
+                        submitBtn.style.backgroundColor = '#10b981';
+                        
+                        // Set the report link and show it
+                        // Store the server-relative path so downloadReport() can fetch it
+                        reportLink.href = status.report_file;
+                        reportLinkContainer.dataset.reportFile = status.report_file;
+                        reportLinkContainer.style.display = 'block';
+                        
+                        // Scroll to the link
+                        reportLinkContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        
+                        // Reset button after 2 seconds
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.style.backgroundColor = '';
+                            submitBtn.style.opacity = '';
+                            submitBtn.disabled = false;
+                        }, 2000);
+                        
+                    } else if (status.status === 'error') {
+                        // Generation failed
+                        clearInterval(pollInterval);
+                        
+                        submitBtn.innerHTML = '❌ Generation Failed';
+                        submitBtn.style.backgroundColor = '#ef4444';
+                        
+                        alert('❌ Error generating report:\n\n' + status.error);
+                        
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.style.backgroundColor = '';
+                            submitBtn.style.opacity = '';
+                            submitBtn.disabled = false;
+                        }, 3000);
+                        
+                    } else if (status.status === 'in_progress') {
+                        // Still generating - update the button text to show progress
+                        const dots = '.'.repeat((pollCount % 3) + 1);
+                        submitBtn.innerHTML = `⏳ Generating Report${dots}`;
+                    }
+                    
+                    // Timeout after max polls
+                    if (pollCount >= maxPolls) {
+                        clearInterval(pollInterval);
+                        submitBtn.innerHTML = '⏱️ Taking longer than expected';
+                        submitBtn.style.backgroundColor = '#f59e0b';
+                        
+                        alert('⏱️ Report generation is taking longer than expected.\n\nThe server is still working on it. Please check back in a moment or refresh the page.');
+                        
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.style.backgroundColor = '';
+                            submitBtn.style.opacity = '';
+                            submitBtn.disabled = false;
+                        }, 3000);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error checking status:', error);
+                }
+                
+            }, 5000); // Poll every 5 seconds
+        }
+        
+        /**
+         * Client-side blob download — fetches the report HTML from the server,
+         * converts it to a Blob URL, and triggers a Save-As on the USER's machine.
+         * This avoids any server-side send_file / Content-Disposition issues.
+         */
+        async function downloadReport() {
+            const container  = document.getElementById('reportLinkContainer');
+            const btn        = document.getElementById('downloadBtn');
+            const reportFile = container.dataset.reportFile;
+
+            if (!reportFile) {
+                alert('No report available. Please generate the report first.');
+                return;
+            }
+
+            const originalHtml = btn.innerHTML;
+            btn.disabled  = true;
+            btn.innerHTML = '⏳ Preparing download...';
+
+            try {
+                // Fetch the HTML report content from the server
+                const response = await fetch(reportFile, { cache: 'no-cache' });
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+
+                const htmlContent = await response.text();
+
+                // Create a Blob from the HTML text — this lives in the browser
+                const blob    = new Blob([htmlContent], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+
+                // Trigger browser Save-As dialog pointing to the local Blob
+                const anchor       = document.createElement('a');
+                anchor.href        = blobUrl;
+                anchor.download    = 'Missing_Fields_Report.html';
+                anchor.style.display = 'none';
+                document.body.appendChild(anchor);
+                anchor.click();
+
+                // Clean up
+                document.body.removeChild(anchor);
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+
+                btn.innerHTML = '✅ Downloaded!';
+                btn.style.background = '#059669';
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 2500);
+
+            } catch (err) {
+                console.error('Download error:', err);
+                btn.innerHTML = '❌ Failed';
+                btn.style.background = '#ef4444';
+                alert('❌ Could not download the report:\n' + err.message);
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 3000);
+            }
+        }
+
+        // Clean up interval on page unload
+        window.addEventListener('beforeunload', () => {
+            if (pollInterval) {
+                clearInterval(pollInterval);
+            }
+        });
+    </script>
+</body>
+</html>

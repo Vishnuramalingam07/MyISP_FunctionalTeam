@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Status Report - MyISP Internal Tools</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ── Page layout ── */
+        body { padding: 12px; }
+
+        .page-wrap {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 8px 40px rgba(80,80,200,.15);
+            overflow: hidden;
+        }
+
+        /* ── Header ── */
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 28px 32px 22px;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .page-header h1 { font-size: 1.65rem; font-weight: 800; margin-bottom: 6px; position: relative; }
+        .page-header p  { opacity: .88; font-size: .95rem; position: relative; }
+
+        /* ── Content area ── */
+        .page-body { padding: 28px 32px; }
+
+        /* ── Cards ── */
+        .card {
+            background: #f8f9ff;
+            border: 1.5px solid #e0e4f0;
+            border-radius: 12px;
+            padding: 22px 26px;
+            margin-bottom: 22px;
+        }
+        .card h3 { font-size: 1rem; font-weight: 700; color: #4c4fad; margin-bottom: 14px; }
+
+        /* ── Steps list ── */
+        .steps-list { list-style: none; padding: 0; margin: 0; }
+        .steps-list li {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 7px 0; font-size: .92rem; color: #555;
+        }
+        .step-num {
+            background: #667eea; color: #fff; border-radius: 50%;
+            width: 22px; height: 22px; line-height: 22px;
+            text-align: center; font-size: .75rem; font-weight: 700;
+            flex-shrink: 0; margin-top: 1px;
+        }
+
+        /* ── Buttons ── */
+        .btn-generate {
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            width: 100%; padding: 15px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff; border: none; border-radius: 10px;
+            font-size: 1.05rem; font-weight: 700; cursor: pointer;
+            transition: opacity .2s, transform .15s;
+            margin-bottom: 16px;
+        }
+        .btn-generate:hover:not(:disabled) { opacity: .92; transform: translateY(-1px); }
+        .btn-generate:disabled { opacity: .55; cursor: not-allowed; transform: none; }
+
+        .btn-view {
+            display: none; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 13px 24px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff; border: none; border-radius: 10px;
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+            transition: opacity .2s;
+            text-decoration: none;
+            margin-bottom: 16px;
+        }
+        .btn-view:hover { opacity: .9; }
+
+        .btn-download {
+            display: none; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 13px 24px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: #fff; border: none; border-radius: 10px;
+            font-size: 1rem; font-weight: 700; cursor: pointer;
+            transition: opacity .2s;
+            text-decoration: none;
+            margin-bottom: 16px;
+        }
+        .btn-download:hover { opacity: .9; }
+
+        .btn-settings {
+            width: 100%; padding: 11px;
+            background: transparent; color: #667eea;
+            border: 1.5px solid #667eea; border-radius: 8px;
+            font-size: .92rem; font-weight: 600; cursor: pointer;
+            transition: background .2s, color .2s;
+        }
+        .btn-settings:hover { background: #667eea; color: #fff; }
+
+        /* ── Status area ── */
+        #statusArea { display: none; margin-bottom: 18px; }
+
+        .status-box {
+            border-radius: 10px; padding: 14px 18px;
+            font-size: .92rem; font-weight: 500;
+        }
+        .status-progress {
+            background: #eff6ff; border: 1.5px solid #bfdbfe; color: #1e40af;
+        }
+        .status-success {
+            background: #f0fdf4; border: 1.5px solid #bbf7d0; color: #15803d;
+        }
+        .status-error {
+            background: #fff1f2; border: 1.5px solid #fecdd3; color: #b91c1c;
+        }
+
+        /* ── Log box ── */
+        .log-wrap { display: none; margin-top: 14px; }
+        .log-wrap summary {
+            cursor: pointer; font-weight: 600; color: #667eea;
+            font-size: .85rem; margin-bottom: 6px; user-select: none;
+        }
+        .log-box {
+            background: #1e1e2e; color: #cdd6f4;
+            padding: 14px; border-radius: 8px;
+            font-size: .76rem; white-space: pre-wrap;
+            max-height: 220px; overflow-y: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+        }
+
+        /* ── Spinner ── */
+        .spinner {
+            width: 18px; height: 18px;
+            border: 3px solid rgba(255,255,255,.35);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin .7s linear infinite;
+            display: none;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Settings modal ── */
+        .modal-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,.45); z-index: 1000;
+            align-items: center; justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: #fff; border-radius: 14px;
+            padding: 28px 32px; max-width: 600px; width: 95%;
+            max-height: 90vh; overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
+        }
+        .modal h2 { font-size: 1.1rem; font-weight: 800; color: #4c4fad; margin-bottom: 18px; }
+        .modal-close {
+            float: right; background: none; border: none;
+            font-size: 1.4rem; cursor: pointer; color: #999; margin-top: -4px;
+        }
+        .field-group { margin-bottom: 16px; }
+        .field-group label { display: block; font-size: .82rem; font-weight: 600; color: #555; margin-bottom: 5px; }
+        .field-group input {
+            width: 100%; padding: 9px 12px;
+            border: 1.5px solid #dde2f0; border-radius: 8px;
+            font-size: .92rem; transition: border-color .2s;
+        }
+        .field-group input:focus { outline: none; border-color: #667eea; }
+        .field-divider { font-size: .78rem; font-weight: 700; color: #999; text-transform: uppercase; letter-spacing: .08em; margin: 18px 0 12px; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 22px; }
+        .btn-save {
+            flex: 1; padding: 11px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff; border: none; border-radius: 8px;
+            font-weight: 700; cursor: pointer; font-size: .95rem;
+        }
+        .btn-cancel {
+            padding: 11px 20px;
+            background: transparent; color: #667eea;
+            border: 1.5px solid #667eea; border-radius: 8px;
+            font-weight: 600; cursor: pointer; font-size: .95rem;
+        }
+        .settings-status { font-size: .85rem; margin-top: 10px; }
+        .settings-status.ok  { color: #15803d; }
+        .settings-status.err { color: #b91c1c; }
+
+        /* ── Back link ── */
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #667eea; text-decoration: none; font-weight: 600;
+            font-size: .9rem; margin-top: 8px;
+        }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="page-wrap">
+    <!-- Header -->
+    <div class="page-header">
+        <h1>📊 Daily Status Report</h1>
+        <p>Main Release — Generate daily status dashboard from Azure DevOps data</p>
+    </div>
+
+    <div class="page-body">
+
+        <!-- About card -->
+        <div class="card">
+            <h3>ℹ️ What this tool does</h3>
+            <ul class="steps-list">
+                <li><span class="step-num">1</span>Downloads PT Status file from SharePoint</li>
+                <li><span class="step-num">2</span>Downloads UAT Detailed Report from SharePoint</li>
+                <li><span class="step-num">3</span>Generates Product Owner details, Story summary, Bug summary &amp; Overall Defect summary</li>
+                <li><span class="step-num">4</span>Builds the Daily Status Dashboard HTML and opens it automatically</li>
+            </ul>
+        </div>
+
+        <!-- Action card -->
+        <div class="card">
+            <h3>🚀 Generate Report</h3>
+
+            <!-- Status messages -->
+            <div id="statusArea">
+                <div id="statusBox" class="status-box status-progress"></div>
+                <details class="log-wrap" id="logWrap">
+                    <summary>▶ Show script output log</summary>
+                    <div class="log-box" id="logBox"></div>
+                </details>
+            </div>
+
+            <!-- Generate button -->
+            <button class="btn-generate" id="generateBtn" onclick="startGenerate()">
+                <div class="spinner" id="spinner"></div>
+                <span id="btnLabel">⚡ Generate Daily Status Report</span>
+            </button>
+
+            <!-- View report button (shown after success) -->
+            <a class="btn-view" id="viewBtn" href="#" target="_blank">
+                📂 View Daily Status Dashboard
+            </a>
+
+            <!-- Download report button (shown after success) -->
+            <a class="btn-download" id="downloadBtn" href="/api/download-daily-status-report" download>
+                ⬇️ Download Daily Status Dashboard
+            </a>
+
+        </div>
+
+        <a href="index.html" class="back-link">← Back to Home</a>
+    </div>
+</div>
+
+
+
+<script>
+    // ─── State ───────────────────────────────────────────────────────────────
+    let pollTimer = null;
+    let pollCount = 0;
+    const MAX_POLLS = 180; // 15 min at 5s
+
+    // ─── UI helpers ──────────────────────────────────────────────────────────
+    function setStatus(type, html) {
+        const area = document.getElementById('statusArea');
+        const box  = document.getElementById('statusBox');
+        area.style.display = 'block';
+        box.className = 'status-box status-' + type;
+        box.innerHTML = html;
+    }
+
+    function showLog(text) {
+        if (!text) return;
+        document.getElementById('logWrap').style.display = 'block';
+        const lb = document.getElementById('logBox');
+        lb.textContent = text;
+        lb.scrollTop = lb.scrollHeight;
+    }
+
+    function setGenerating(on) {
+        const btn = document.getElementById('generateBtn');
+        const spinner = document.getElementById('spinner');
+        const label = document.getElementById('btnLabel');
+        btn.disabled = on;
+        spinner.style.display = on ? 'block' : 'none';
+        label.textContent = on ? 'Generating…' : '⚡ Generate Daily Status Report';
+    }
+
+    function showViewBtn(url) {
+        const vb = document.getElementById('viewBtn');
+        vb.href = url;
+        vb.style.display = 'flex';
+        document.getElementById('downloadBtn').style.display = 'flex';
+    }
+
+    // ─── Generate & Poll ─────────────────────────────────────────────────────
+    async function startGenerate() {
+        setGenerating(true);
+        document.getElementById('viewBtn').style.display = 'none';
+        document.getElementById('downloadBtn').style.display = 'none';
+        document.getElementById('logWrap').style.display = 'none';
+        setStatus('progress', '🔄 Starting report generation…');
+        pollCount = 0;
+
+        try {
+            const resp = await fetch('/api/generate-daily-status-report', { method: 'POST' });
+            const data = await resp.json();
+            if (!data.success) {
+                setGenerating(false);
+                setStatus('error', '❌ ' + (data.error || 'Failed to start generation'));
+                return;
+            }
+        } catch (e) {
+            setGenerating(false);
+            setStatus('error', '❌ Network error: ' + e.message);
+            return;
+        }
+
+        clearInterval(pollTimer);
+        pollTimer = setInterval(poll, 5000);
+        poll(); // immediate first check
+    }
+
+    async function poll() {
+        pollCount++;
+        if (pollCount > MAX_POLLS) {
+            clearInterval(pollTimer);
+            setGenerating(false);
+            setStatus('error', '❌ Timed out waiting for report generation (>15 min)');
+            return;
+        }
+
+        try {
+            const resp = await fetch('/api/check-daily-status-report');
+            const data = await resp.json();
+
+            if (data.log) showLog(data.log);
+
+            if (data.in_progress) {
+                const elapsed = (pollCount * 5);
+                setStatus('progress',
+                    `🔄 Generating report… (${elapsed}s elapsed)<br>` +
+                    `<small style="opacity:.75">Downloading SharePoint files &amp; processing ADO queries — this can take a few minutes.</small>`);
+                return;
+            }
+
+            // Done (success or error)
+            clearInterval(pollTimer);
+            setGenerating(false);
+
+            if (data.error) {
+                setStatus('error', '❌ Report generation failed:<br><code style="font-size:.85em">' + data.error + '</code>');
+            } else if (data.last_generated) {
+                const url = '/' + data.last_generated;
+                setStatus('success', '✅ Daily Status Dashboard generated successfully!');
+                showViewBtn(url);
+                // Auto-open in new tab
+                window.open(url, '_blank');
+            } else {
+                setStatus('error', '❌ Generation finished but dashboard file not found.');
+            }
+        } catch (e) {
+            // Transient network hiccup — keep polling
+        }
+    }
+
+    // On load: check if a report was already generated previously
+    window.addEventListener('load', async function() {
+        try {
+            const resp = await fetch('/api/check-daily-status-report');
+            const data = await resp.json();
+            if (!data.in_progress && data.last_generated) {
+                showViewBtn('/' + data.last_generated);
+            }
+            if (data.in_progress) {
+                // Resume polling if a generation was started before page load
+                setGenerating(true);
+                setStatus('progress', '🔄 Report generation is in progress…');
+                pollTimer = setInterval(poll, 5000);
+            }
+        } catch (e) { /* ignore */ }
+    });
+</script>
+</body>
+</html>
