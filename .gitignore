@@ -2,7 +2,7 @@
 .env
 
 # Supabase browser credentials (copy from supabase-config.example.js)
-Attendance/supabase-config.js
+# Attendance/supabase-config.js  # committed intentionally for GitHub Pages
 
 # Virtual environment
 .venv/
