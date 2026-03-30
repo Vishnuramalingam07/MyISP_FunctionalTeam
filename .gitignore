@@ -1,6 +1,9 @@
 # Environment variables (secrets)
 .env
 
+# Supabase browser credentials (copy from supabase-config.example.js)
+Attendance/supabase-config.js
+
 # Virtual environment
 .venv/
 venv/
