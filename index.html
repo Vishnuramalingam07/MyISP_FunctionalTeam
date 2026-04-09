@@ -226,7 +226,8 @@
         </div>
     </div>
 
-    <script>
+    <script src="config.js"></script>
+<script>
         // Settings Modal Functions
         function openSettings() {
             document.getElementById('settingsModal').style.display = 'flex';
@@ -276,7 +277,7 @@
 
             try {
                 // Fetch current config from API
-                const response = await fetch('/api/get-regression-config');
+                const response = await fetch(getApiUrl('/api/get-regression-config'));
                 const data = await response.json();
 
                 if (!data.success) {
@@ -359,7 +360,7 @@
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch('/api/update-regression-config', {
+                const response = await fetch(getApiUrl('/api/update-regression-config'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -405,7 +406,7 @@
             `;
 
             try {
-                const response = await fetch('/api/get-daily-report-settings');
+                const response = await fetch(getApiUrl('/api/get-daily-report-settings'));
                 const data = await response.json();
 
                 if (!data.success) throw new Error(data.error || 'Failed to load configuration');
@@ -487,7 +488,7 @@
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch('/api/update-daily-report-settings', {
+                const response = await fetch(getApiUrl('/api/update-daily-report-settings'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(settings)
@@ -514,7 +515,7 @@
             `;
 
             try {
-                const response = await fetch('/api/get-hotfix-daily-report-settings');
+                const response = await fetch(getApiUrl('/api/get-hotfix-daily-report-settings'));
                 const data = await response.json();
 
                 if (!data.success) throw new Error(data.error || 'Failed to load configuration');
@@ -596,7 +597,7 @@
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch('/api/update-hotfix-daily-report-settings', {
+                const response = await fetch(getApiUrl('/api/update-hotfix-daily-report-settings'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(settings)
@@ -623,7 +624,7 @@
             `;
 
             try {
-                const response = await fetch('/api/get-tc-compare-settings');
+                const response = await fetch(getApiUrl('/api/get-tc-compare-settings'));
                 const data = await response.json();
 
                 if (!data.success) throw new Error(data.error || 'Failed to load configuration');
@@ -689,7 +690,7 @@
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch('/api/update-tc-compare-settings', {
+                const response = await fetch(getApiUrl('/api/update-tc-compare-settings'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(settings)
@@ -716,7 +717,7 @@
             `;
 
             try {
-                const response = await fetch('/api/get-mpoc-extref-settings');
+                const response = await fetch(getApiUrl('/api/get-mpoc-extref-settings'));
                 const data = await response.json();
 
                 if (!data.success) throw new Error(data.error || 'Failed to load configuration');
@@ -770,7 +771,7 @@
             submitBtn.disabled = true;
 
             try {
-                const response = await fetch('/api/update-mpoc-extref-settings', {
+                const response = await fetch(getApiUrl('/api/update-mpoc-extref-settings'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(settings)
@@ -971,7 +972,7 @@
             // If missing-filed tool and Query ID changed, update the Python script
             if (toolId === 'missing-filed' && settings['query-id-missing']) {
                 try {
-                    const response = await fetch('/api/update-query-id', {
+                    const response = await fetch(getApiUrl('/api/update-query-id'), {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'

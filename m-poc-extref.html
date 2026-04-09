@@ -234,13 +234,14 @@
         </div>
     </div>
 
-    <script>
+    <script src="config.js"></script>
+<script>
         let pollTimer = null;
 
         // Pre-populate Query ID from settings on page load
         (async () => {
             try {
-                const res = await fetch('/api/get-mpoc-extref-settings');
+                const res = await fetch(getApiUrl('/api/get-mpoc-extref-settings'));
                 const data = await res.json();
                 if (data.success && data.settings && data.settings.query_id) {
                     document.getElementById('queryIdInput').value = data.settings.query_id;
@@ -265,7 +266,7 @@
             saveMsg.style.display = 'none';
 
             try {
-                const res = await fetch('/api/update-mpoc-extref-settings', {
+                const res = await fetch(getApiUrl('/api/update-mpoc-extref-settings'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query_id: queryId })
@@ -315,7 +316,7 @@
             document.getElementById('logBox').style.display = 'none';
 
             try {
-                const res = await fetch('/api/generate-mpoc-extref', {
+                const res = await fetch(getApiUrl('/api/generate-mpoc-extref'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query_id: queryId })
@@ -336,7 +337,7 @@
 
         async function pollStatus() {
             try {
-                const res = await fetch('/api/check-mpoc-extref');
+                const res = await fetch(getApiUrl('/api/check-mpoc-extref'));
                 const data = await res.json();
 
                 if (data.log) {
@@ -419,7 +420,7 @@
         // On load – resume if already running and restore last query id
         (async () => {
             try {
-                const res = await fetch('/api/check-mpoc-extref');
+                const res = await fetch(getApiUrl('/api/check-mpoc-extref'));
                 const data = await res.json();
 
                 if (data.in_progress) {

@@ -190,7 +190,8 @@
         </div>
     </div>
 
-    <script>
+    <script src="config.js"></script>
+<script>
         let summaryUrl = null;
         let pollInterval = null;
 
@@ -261,7 +262,7 @@
                 if (suiteId) progressLog.textContent += `Suite ID override: ${suiteId}\n`;
                 progressLog.textContent += 'Sending to server...\n';
 
-                const response = await fetch('/api/ado-upload', {
+                const response = await fetch(getApiUrl('/api/ado-upload'), {
                     method: 'POST',
                     body: formData
                 });
@@ -304,7 +305,7 @@
                 btn.innerHTML = `⏳ Processing${dots}`;
 
                 try {
-                    const resp = await fetch('/api/ado-upload-status', { cache: 'no-cache' });
+                    const resp = await fetch(getApiUrl('/api/ado-upload-status'), { cache: 'no-cache' });
                     const status = await resp.json();
 
                     // Stream log output

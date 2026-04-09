@@ -84,7 +84,8 @@
         </div>
     </div>
 
-    <script>
+    <script src="config.js"></script>
+<script>
         async function runMacro() {
             const btn = document.getElementById('runMacroBtn');
             const status = document.getElementById('runMacroStatus');
@@ -97,7 +98,7 @@
             status.textContent = '📂 Looking for file in Downloads folder...';
             
             try {
-                const response = await fetch('/api/run-macro');
+                const response = await fetch(getApiUrl('/api/run-macro'));
                 const result = await response.json();
                 
                 if (result.success) {

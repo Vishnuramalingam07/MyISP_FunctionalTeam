@@ -258,7 +258,8 @@
     </div>
 </div>
 
-
+<!-- Backend API Configuration -->
+<script src="config.js"></script>
 
 <script>
     // ─── State ───────────────────────────────────────────────────────────────
@@ -309,7 +310,7 @@
         pollCount = 0;
 
         try {
-            const resp = await fetch('/api/generate-daily-status-report', { method: 'POST' });
+            const resp = await fetch(getApiUrl('/api/generate-daily-status-report'), { method: 'POST' });
             const data = await resp.json();
             if (!data.success) {
                 setGenerating(false);
@@ -337,7 +338,7 @@
         }
 
         try {
-            const resp = await fetch('/api/check-daily-status-report');
+            const resp = await fetch(getApiUrl('/api/check-daily-status-report'));
             const data = await resp.json();
 
             if (data.log) showLog(data.log);
@@ -373,7 +374,7 @@
     // On load: check if a report was already generated previously
     window.addEventListener('load', async function() {
         try {
-            const resp = await fetch('/api/check-daily-status-report');
+            const resp = await fetch(getApiUrl('/api/check-daily-status-report'));
             const data = await resp.json();
             if (!data.in_progress && data.last_generated) {
                 showViewBtn('/' + data.last_generated);

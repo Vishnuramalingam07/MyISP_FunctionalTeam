@@ -42,7 +42,8 @@
         </div>
     </div>
 
-    <script>
+    <script src="config.js"></script>
+<script>
         const generateBtn = document.getElementById('generateBtn');
         const btnText = document.getElementById('btnText');
         const statusMessage = document.getElementById('statusMessage');
@@ -57,7 +58,7 @@
 
             try {
                 // Call the API to generate the report
-                const response = await fetch('/api/generate-regression-report', {
+                const response = await fetch(getApiUrl('/api/generate-regression-report'), {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -106,7 +107,7 @@
         // Check if the script is available on page load
         window.addEventListener('load', async function() {
             try {
-                const response = await fetch('/api/check-script');
+                const response = await fetch(getApiUrl('/api/check-script'));
                 const result = await response.json();
                 
                 if (!result.available) {

@@ -190,7 +190,8 @@
         </div>
     </div>
 
-    <script>
+    <script src="config.js"></script>
+<script>
         let pollTimer = null;
 
         async function startGeneration() {
@@ -211,7 +212,7 @@
             document.getElementById('logBox').style.display = 'none';
 
             try {
-                const res = await fetch('/api/generate-tc-compare-report', { method: 'POST' });
+                const res = await fetch(getApiUrl('/api/generate-tc-compare-report'), { method: 'POST' });
                 const data = await res.json();
 
                 if (!data.success) {
@@ -229,7 +230,7 @@
 
         async function pollStatus() {
             try {
-                const res = await fetch('/api/check-tc-compare-report');
+                const res = await fetch(getApiUrl('/api/check-tc-compare-report'));
                 const data = await res.json();
 
                 // Update log
@@ -313,7 +314,7 @@
         // On load – check if a previous report was generated this session
         (async () => {
             try {
-                const res = await fetch('/api/check-tc-compare-report');
+                const res = await fetch(getApiUrl('/api/check-tc-compare-report'));
                 const data = await res.json();
 
                 if (data.in_progress) {

@@ -69,7 +69,8 @@
         </div>
     </div>
 
-    <script>
+    <script src="config.js"></script>
+<script>
         let pollInterval = null;
 
         async function generateReport() {
@@ -98,7 +99,7 @@
                 }
 
                 // Start the report generation (returns immediately)
-                const response = await fetch('/api/generate-missing-scope-report', {
+                const response = await fetch(getApiUrl('/api/generate-missing-scope-report'), {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ query_id: queryId }),
@@ -144,7 +145,7 @@
                 pollCount++;
 
                 try {
-                    const response = await fetch('/api/check-missing-scope-report-status', {
+                    const response = await fetch(getApiUrl('/api/check-missing-scope-report-status'), {
                         method: 'GET',
                         cache: 'no-cache'
                     });
