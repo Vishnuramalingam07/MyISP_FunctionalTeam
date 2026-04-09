@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISP Best Practices FY26 — Executive Presentation</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --purple: #A000FF;
+    --purple-light: #C44DFF;
+    --purple-dark: #6B00AA;
+    --navy: #0A0A2E;
+    --navy-mid: #12124A;
+    --navy-card: #1A1A5E;
+    --accent-teal: #00C2CB;
+    --accent-green: #00D68F;
+    --accent-orange: #FF6B35;
+    --accent-red: #CC3300;
+    --accent-gold: #FFD700;
+    --white: #FFFFFF;
+    --text-muted: rgba(255,255,255,0.65);
+    --border: rgba(160,0,255,0.3);
+    --card-bg: rgba(255,255,255,0.04);
+    --gradient-main: linear-gradient(135deg, #0A0A2E 0%, #1A0050 50%, #0D0D3E 100%);
+    --gradient-section: linear-gradient(135deg, #12124A 0%, #1A1A6E 100%);
+    --radius: 16px;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font);
+    background: var(--gradient-main);
+    color: var(--white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ───────────────────────────────── */
+  .top-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 60px;
+    background: rgba(10,10,46,0.95);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+  }
+  .nav-brand { display: flex; align-items: center; gap: 12px; }
+  .nav-logo {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: linear-gradient(135deg, var(--purple), var(--accent-teal));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 800; color: white;
+    flex-shrink: 0;
+  }
+  .nav-title { font-size: 14px; font-weight: 600; color: var(--white); letter-spacing: 0.04em; }
+  .nav-subtitle { font-size: 11px; color: var(--text-muted); }
+  .nav-links { display: flex; gap: 4px; }
+  .nav-link {
+    padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: 500;
+    color: var(--text-muted); text-decoration: none; transition: all 0.2s;
+    cursor: pointer;
+  }
+  .nav-link:hover, .nav-link.active { background: rgba(160,0,255,0.15); color: var(--white); }
+  .nav-date { font-size: 11px; color: var(--text-muted); }
+
+  /* ── MAIN WRAPPER ───────────────────────── */
+  .main-wrapper { padding-top: 60px; }
+
+  /* ── HERO ───────────────────────────────── */
+  .hero {
+    position: relative; overflow: hidden;
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center; padding: 80px 40px 60px;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(160,0,255,0.18) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(0,194,203,0.1) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.05;
+    background-image: linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 16px; border-radius: 100px;
+    border: 1px solid var(--border);
+    background: rgba(160,0,255,0.12);
+    font-size: 12px; font-weight: 500; letter-spacing: 0.1em;
+    color: var(--purple-light); text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .hero-badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--purple-light); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
+
+  .hero-overline { font-size: 13px; font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+  .hero-title {
+    font-size: clamp(38px, 6vw, 76px);
+    font-weight: 900; line-height: 1.05;
+    letter-spacing: -0.03em;
+    background: linear-gradient(135deg, #FFFFFF 30%, var(--purple-light) 60%, var(--accent-teal) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 10px;
+  }
+  .hero-subtitle {
+    font-size: clamp(18px, 2.5vw, 28px);
+    font-weight: 300; color: var(--text-muted); margin-bottom: 40px;
+  }
+  .hero-stats {
+    display: flex; gap: 40px; justify-content: center; flex-wrap: wrap;
+    margin-bottom: 50px;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-value {
+    font-size: 40px; font-weight: 800; line-height: 1;
+    background: linear-gradient(135deg, var(--accent-teal), var(--purple-light));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-stat-label { font-size: 12px; font-weight: 500; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.08em; }
+  .hero-cta {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 14px 32px; border-radius: 100px;
+    background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+    color: white; font-size: 15px; font-weight: 600;
+    text-decoration: none; cursor: pointer;
+    border: none; transition: all 0.3s;
+    box-shadow: 0 8px 32px rgba(160,0,255,0.4);
+  }
+  .hero-cta:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(160,0,255,0.6); }
+
+  .scroll-indicator {
+    position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: var(--text-muted); font-size: 11px; letter-spacing: 0.1em;
+  }
+  .scroll-indicator span { display: block; width: 1px; height: 40px; background: linear-gradient(to bottom, var(--purple-light), transparent); }
+
+  /* ── SECTIONS ───────────────────────────── */
+  .section {
+    padding: 80px 40px;
+    max-width: 1400px; margin: 0 auto;
+  }
+  .section-full { padding: 80px 0; background: rgba(255,255,255,0.02); }
+  .section-full .section-inner { max-width: 1400px; margin: 0 auto; padding: 0 40px; }
+
+  .section-header { margin-bottom: 52px; }
+  .section-label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--purple-light); margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: clamp(28px, 3.5vw, 48px); font-weight: 800; line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+  .section-desc { font-size: 16px; color: var(--text-muted); margin-top: 12px; max-width: 640px; }
+  .title-accent { color: var(--purple-light); }
+
+  /* ── TIMELINE SLIDE 2 ────────────────────── */
+  .timeline-container { position: relative; overflow: visible; }
+
+  .timeline-header-row {
+    display: grid; grid-template-columns: 200px repeat(5, 1fr);
+    gap: 12px; margin-bottom: 0;
+  }
+  .timeline-phases { display: grid; grid-template-columns: 200px repeat(5, 1fr); gap: 12px; }
+
+  .timeline-phase-col { display: flex; flex-direction: column; gap: 12px; }
+
+  .timeline-phase-header {
+    padding: 14px 16px; border-radius: 12px 12px 0 0;
+    text-align: center; font-size: 13px; font-weight: 700;
+    position: relative; overflow: hidden;
+  }
+  .timeline-phase-header.gap { background: transparent; }
+  .phase-q { font-size: 15px; font-weight: 800; }
+  .phase-fy { font-size: 11px; opacity: 0.8; }
+
+  .phase-starting { background: linear-gradient(135deg, #CC3300, #FF4444); }
+  .phase-q3 { background: linear-gradient(135deg, #6B00AA, #A000FF); }
+  .phase-q4 { background: linear-gradient(135deg, #0066CC, #0099FF); }
+  .phase-q1 { background: linear-gradient(135deg, #007A3D, #00C060); }
+  .phase-q2fy26 { background: linear-gradient(135deg, #A000FF, #00C2CB); }
+
+  .category-label {
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(160,0,255,0.15);
+    border: 1px solid rgba(160,0,255,0.3);
+    font-size: 12px; font-weight: 700;
+    color: var(--purple-light); letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: flex; align-items: center;
+  }
+
+  .phase-card {
+    border-radius: 12px; padding: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--card-bg);
+    flex: 1; min-height: 80px;
+    transition: all 0.25s;
+  }
+  .phase-card:hover {
+    border-color: var(--border);
+    background: rgba(160,0,255,0.08);
+    transform: translateY(-2px);
+  }
+  .phase-card ul { list-style: none; }
+  .phase-card li {
+    font-size: 11.5px; color: var(--text-muted); padding: 3px 0;
+    padding-left: 14px; position: relative; line-height: 1.45;
+  }
+  .phase-card li::before {
+    content: '▸'; position: absolute; left: 0;
+    color: var(--purple-light); font-size: 10px; top: 4px;
+  }
+  .phase-card.red li::before { color: var(--accent-red); }
+  .phase-card.purple li::before { color: var(--purple-light); }
+  .phase-card.blue li::before { color: var(--accent-teal); }
+  .phase-card.green li::before { color: var(--accent-green); }
+  .phase-card.gold li::before { color: var(--accent-gold); }
+
+  .phase-card.empty { opacity: 0; pointer-events: none; }
+
+  .timeline-connector {
+    display: grid; grid-template-columns: 200px repeat(5, 1fr);
+    gap: 12px; padding: 16px 0 0 0; align-items: center;
+  }
+  .connector-track {
+    grid-column: 2 / -1; height: 4px;
+    background: linear-gradient(90deg, var(--accent-red), var(--purple), var(--accent-teal), var(--accent-green), var(--accent-gold));
+    border-radius: 4px; position: relative;
+  }
+  .connector-dots {
+    display: flex; justify-content: space-around; position: absolute;
+    top: 50%; transform: translateY(-50%); left: 0; right: 0;
+  }
+  .connector-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 3px solid var(--navy);
+  }
+
+  /* ── METRICS / SLIDE 3 ───────────────────── */
+  .practices-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;
+  }
+  .practice-card {
+    background: var(--card-bg);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius); padding: 24px;
+    transition: all 0.25s; position: relative; overflow: hidden;
+  }
+  .practice-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .practice-card:hover { transform: translateY(-4px); border-color: var(--border); box-shadow: 0 12px 40px rgba(160,0,255,0.2); }
+  .pcard-release::before { background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
+  .pcard-defect::before { background: linear-gradient(90deg, var(--accent-red), #FF6B6B); }
+  .pcard-devops::before { background: linear-gradient(90deg, var(--accent-teal), #00A0B0); }
+  .pcard-ops::before { background: linear-gradient(90deg, var(--accent-green), #00AA70); }
+  .pcard-monitor::before { background: linear-gradient(90deg, #FF6B35, #FFB347); }
+  .pcard-plan::before { background: linear-gradient(90deg, #0099FF, #66CCFF); }
+  .pcard-gov::before { background: linear-gradient(90deg, var(--accent-gold), #FFA500); }
+
+  .pcard-icon { font-size: 28px; margin-bottom: 14px; }
+  .pcard-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .pcard-items { list-style: none; margin-bottom: 16px; }
+  .pcard-items li { font-size: 12px; color: var(--text-muted); padding: 4px 0; padding-left: 16px; position: relative; line-height: 1.5; }
+  .pcard-items li::before { content: '•'; position: absolute; left: 4px; color: var(--purple-light); }
+  .pcard-metric {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: 10px;
+    background: rgba(160,0,255,0.1); border: 1px solid rgba(160,0,255,0.2);
+  }
+  .pcard-metric-val { font-size: 20px; font-weight: 800; color: var(--purple-light); line-height: 1; }
+  .pcard-metric-label { font-size: 11px; color: var(--text-muted); line-height: 1.3; }
+
+  /* ── KPI COUNTERS ────────────────────────── */
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;
+  }
+  .kpi-card {
+    padding: 28px 24px; border-radius: var(--radius);
+    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--card-bg); text-align: center;
+    position: relative; overflow: hidden; transition: all 0.25s;
+  }
+  .kpi-card:hover { transform: translateY(-4px); border-color: var(--border); }
+  .kpi-card::after {
+    content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 3px; border-radius: 3px 3px 0 0;
+    background: var(--color, var(--purple-light));
+  }
+  .kpi-icon { font-size: 24px; margin-bottom: 12px; display: block; }
+  .kpi-value {
+    font-size: 42px; font-weight: 900; line-height: 1;
+    color: var(--color, var(--purple-light));
+    margin-bottom: 6px;
+  }
+  .kpi-suffix { font-size: 22px; font-weight: 700; }
+  .kpi-label { font-size: 12px; font-weight: 500; color: var(--text-muted); line-height: 1.4; }
+  .kpi-change { font-size: 11px; margin-top: 8px; padding: 3px 10px; border-radius: 20px; display: inline-block; }
+  .kpi-change.positive { background: rgba(0,214,143,0.15); color: var(--accent-green); }
+  .kpi-change.target { background: rgba(160,0,255,0.15); color: var(--purple-light); }
+
+  /* ── CHARTS ─────────────────────────────── */
+  .charts-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .chart-card {
+    background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08);
+    border-radius: var(--radius); padding: 28px; transition: all 0.25s;
+  }
+  .chart-card:hover { border-color: var(--border); }
+  .chart-card.wide { grid-column: 1 / -1; }
+  .chart-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .chart-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 24px; }
+  .chart-canvas-wrap { position: relative; height: 240px; }
+  canvas { max-width: 100%; }
+
+  /* ── PAIN POINTS ─────────────────────────── */
+  .painpoint-section {
+    background: rgba(204,51,0,0.06); border: 1px solid rgba(204,51,0,0.2);
+    border-radius: var(--radius); padding: 28px;
+  }
+  .painpoint-title { font-size: 15px; font-weight: 700; color: #FF6B6B; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .painpoint-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+  .painpoint-item {
+    display: flex; align-items: flex-start; gap: 10px;
+    padding: 12px; border-radius: 10px; background: rgba(204,51,0,0.08);
+    font-size: 12.5px; color: rgba(255,255,255,0.8); line-height: 1.5;
+  }
+  .painpoint-item::before { content: '⚠'; font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── MATURITY ────────────────────────────── */
+  .maturity-track {
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+    border-radius: var(--radius); overflow: hidden; position: relative;
+  }
+  .maturity-step {
+    padding: 28px 20px 24px; text-align: center;
+    position: relative; transition: all 0.25s;
+  }
+  .maturity-step:hover { transform: scale(1.02); z-index: 2; }
+  .maturity-step::after {
+    content: '▶'; position: absolute; right: -8px; top: 50%; transform: translateY(-50%);
+    font-size: 14px; z-index: 3;
+  }
+  .maturity-step:last-child::after { display: none; }
+  .m1 { background: rgba(204,51,0,0.15); border: 1px solid rgba(204,51,0,0.3); }
+  .m2 { background: rgba(107,0,170,0.2); border: 1px solid rgba(107,0,170,0.4); }
+  .m3 { background: rgba(0,102,204,0.2); border: 1px solid rgba(0,102,204,0.4); }
+  .m4 { background: rgba(0,122,61,0.2); border: 1px solid rgba(0,122,61,0.4); }
+  .m5 { background: linear-gradient(135deg, rgba(160,0,255,0.25), rgba(0,194,203,0.2)); border: 2px solid rgba(0,194,203,0.5); }
+  .maturity-icon { font-size: 32px; margin-bottom: 12px; display: block; }
+  .maturity-label { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .maturity-desc { font-size: 11px; color: var(--text-muted); line-height: 1.5; }
+  .maturity-badge {
+    display: inline-block; padding: 3px 10px; border-radius: 20px;
+    font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    margin-top: 10px;
+  }
+  .m1 .maturity-badge { background: rgba(204,51,0,0.3); color: #FF8A6B; }
+  .m2 .maturity-badge { background: rgba(160,0,255,0.3); color: var(--purple-light); }
+  .m3 .maturity-badge { background: rgba(0,153,255,0.3); color: #66CCFF; }
+  .m4 .maturity-badge { background: rgba(0,214,143,0.2); color: var(--accent-green); }
+  .m5 .maturity-badge { background: rgba(0,194,203,0.3); color: var(--accent-teal); animation: glow 2s infinite; }
+  @keyframes glow { 0%,100%{box-shadow:0 0 6px rgba(0,194,203,0.4)} 50%{box-shadow:0 0 16px rgba(0,194,203,0.8)} }
+  .maturity-step::after { color: rgba(255,255,255,0.25); }
+
+  /* ── OUTCOMES BANNER ─────────────────────── */
+  .outcomes-banner {
+    background: linear-gradient(135deg, rgba(160,0,255,0.15) 0%, rgba(0,194,203,0.1) 100%);
+    border: 1px solid rgba(160,0,255,0.3); border-radius: var(--radius);
+    padding: 36px 40px;
+  }
+  .outcomes-title { font-size: 20px; font-weight: 800; margin-bottom: 24px; }
+  .outcomes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+  .outcome-item { display: flex; align-items: flex-start; gap: 14px; }
+  .outcome-icon {
+    width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 18px;
+    background: rgba(160,0,255,0.2); border: 1px solid rgba(160,0,255,0.3);
+  }
+  .outcome-val { font-size: 20px; font-weight: 800; color: var(--purple-light); line-height: 1; }
+  .outcome-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+
+  /* ── FOOTER ──────────────────────────────── */
+  .footer {
+    padding: 40px; text-align: center;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    color: var(--text-muted); font-size: 12px;
+  }
+  .footer strong { color: var(--purple-light); }
+
+  /* ── DIVIDER ─────────────────────────────── */
+  .section-divider {
+    width: 100%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(160,0,255,0.4), transparent);
+    margin: 0;
+  }
+
+  /* ── RESPONSIVE ──────────────────────────── */
+  @media (max-width: 900px) {
+    .top-nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .section { padding: 60px 20px; }
+    .section-full .section-inner { padding: 0 20px; }
+    .charts-grid { grid-template-columns: 1fr; }
+    .charts-grid .chart-card.wide { grid-column: 1; }
+    .maturity-track { grid-template-columns: 1fr; }
+    .maturity-step::after { display: none; }
+    .timeline-phases, .timeline-connector { grid-template-columns: 1fr; }
+    .timeline-phase-header.gap { display: none; }
+    .category-label { display: none; }
+    .hero-stats { gap: 20px; }
+    .hero-stat-value { font-size: 30px; }
+  }
+
+  /* ── ANIMATIONS ──────────────────────────── */
+  .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.7s, transform 0.7s; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+  .delay-1 { transition-delay: 0.1s; }
+  .delay-2 { transition-delay: 0.2s; }
+  .delay-3 { transition-delay: 0.3s; }
+  .delay-4 { transition-delay: 0.4s; }
+  .delay-5 { transition-delay: 0.5s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+  <div class="nav-brand">
+    <div class="nav-logo">ISP</div>
+    <div>
+      <div class="nav-title">ISP Best Practices FY26</div>
+      <div class="nav-subtitle">Executive Presentation · Digital Thread Program</div>
+    </div>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" onclick="scrollTo('journey')">Process Journey</a>
+    <a class="nav-link" onclick="scrollTo('practices')">Practices</a>
+    <a class="nav-link" onclick="scrollTo('metrics')">Metrics</a>
+    <a class="nav-link" onclick="scrollTo('maturity')">Maturity</a>
+  </div>
+  <div class="nav-date">FY26 · Q1 Review</div>
+</nav>
+
+<div class="main-wrapper">
+
+  <!-- ── HERO ── -->
+  <section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+
+    <div class="hero-badge">Executive Presentation</div>
+    <div class="hero-overline">Digital Thread — ISP Program</div>
+    <h1 class="hero-title">ISP Best Practices<br>FY26</h1>
+    <p class="hero-subtitle">Process Maturity · Delivery Excellence · Continuous Improvement</p>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-value">70%</div>
+        <div class="hero-stat-label">Defect Density Reduction</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">2×</div>
+        <div class="hero-stat-label">Team Throughput</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">100%</div>
+        <div class="hero-stat-label">Release Schedule Adherence</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-value">40%</div>
+        <div class="hero-stat-label">Code Issues Reduction</div>
+      </div>
+    </div>
+
+    <button class="hero-cta" onclick="document.getElementById('journey').scrollIntoView({behavior:'smooth'})">
+      View Full Journey ↓
+    </button>
+
+    <div class="scroll-indicator">
+      SCROLL
+      <span></span>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ── SLIDE 2: ISP PROCESS JOURNEY ── -->
+  <section class="section" id="journey">
+    <div class="section-header fade-up">
+      <div class="section-label">Slide 2 · Executive Summary</div>
+      <h2 class="section-title">ISP <span class="title-accent">Process Journey</span></h2>
+      <p class="section-desc">From Q2 FY25 baseline challenges to a mature, AI-enabled delivery engine by Q2 FY26</p>
+    </div>
+
+    <!-- Pain Points Banner -->
+    <div class="painpoint-section fade-up delay-1" style="margin-bottom:40px;">
+      <div class="painpoint-title">⚠ Q2 FY25 Baseline Challenges</div>
+      <div class="painpoint-grid">
+        <div class="painpoint-item">Injected ~300 defects per release</div>
+        <div class="painpoint-item">Volatile scope &amp; ad hoc releases with overlaps</div>
+        <div class="painpoint-item">Missed release schedules &amp; delivery gaps</div>
+        <div class="painpoint-item">Last-minute surprises, overburns &amp; reworks</div>
+        <div class="painpoint-item">Gaps in support &amp; communication to SAs</div>
+        <div class="painpoint-item">SME knowledge gaps due to transition issues</div>
+        <div class="painpoint-item">Frequent outages and P1/P2 tickets</div>
+        <div class="painpoint-item">No common dashboards for reporting or drill-downs</div>
+        <div class="painpoint-item">No formal measurement mechanism for program capabilities</div>
+        <div class="painpoint-item">Need for predictable &amp; consistent delivery commitments</div>
+      </div>
+    </div>
+
+    <!-- Timeline Grid -->
+    <div class="timeline-container fade-up delay-2">
+      <!-- Phase Headers -->
+      <div class="timeline-phases" style="display:grid;grid-template-columns:180px repeat(4,1fr);gap:12px;align-items:start;">
+        <div></div>
+        <div class="timeline-phase-col">
+          <div class="timeline-phase-header phase-q3">
+            <div class="phase-q">Q3 FY25</div>
+            <div class="phase-fy">Stabilize</div>
+          </div>
+          <div class="phase-card purple">
+            <ul>
+              <li>Prod defect backlog — focused effort</li>
+              <li>Early Reviews: Tech Arch / UX / PO</li>
+              <li>People realignments — roles &amp; responsibilities</li>
+              <li>Refine test processes &amp; enforce code checks</li>
+              <li>Refine release process (Cal/Rollback/Reviews)</li>
+              <li>Streamlined handshakes — Dev &amp; Ops</li>
+              <li>BA-led formal transitions initiated</li>
+            </ul>
+          </div>
+        </div>
+        <div class="timeline-phase-col">
+          <div class="timeline-phase-header phase-q4">
+            <div class="phase-q">Q4 FY25</div>
+            <div class="phase-fy">Govern</div>
+          </div>
+          <div class="phase-card blue">
+            <ul>
+              <li>Ticket-based SLAs, 24×5 cross-region support</li>
+              <li>DataDog for preventive checks</li>
+              <li>Roadmap alignments: PO – BA – Dev – Ops – Release</li>
+              <li>Established Reports &amp; trends (Plan, Defects, Test, Performance)</li>
+              <li>Leadership reporting on delivery, productivity &amp; quality</li>
+              <li>Ops process audit by GCC — gaps bridged</li>
+            </ul>
+          </div>
+        </div>
+        <div class="timeline-phase-col">
+          <div class="timeline-phase-header phase-q1">
+            <div class="phase-q">Q1 FY26</div>
+            <div class="phase-fy">Innovate</div>
+          </div>
+          <div class="phase-card green">
+            <ul>
+              <li>Agentic skills for BA, Dev, Test &amp; Mgmt</li>
+              <li>AI-DC Agent deployment &amp; adoption</li>
+              <li>In-sprint regression automation / DevOps for Test</li>
+              <li>Shift left — prerelease metrics &amp; DataDog alerts in lower env</li>
+              <li>Cross-pollinate processes to MMD &amp; Method One</li>
+            </ul>
+          </div>
+        </div>
+        <div class="timeline-phase-col">
+          <div class="timeline-phase-header phase-q2fy26">
+            <div class="phase-q">Q2 FY26</div>
+            <div class="phase-fy">Lead 🎯</div>
+          </div>
+          <div class="phase-card gold">
+            <ul>
+              <li>Publish program-specific metrics: productivity, quality, delivery</li>
+              <li>Measure efficiency with proactive indicators &amp; alerts</li>
+              <li>Program-level trends with drill-down Leader boards</li>
+              <li>Scale maturity across programs</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress Connector -->
+      <div style="display:grid;grid-template-columns:180px repeat(4,1fr);gap:12px;margin-top:20px;align-items:center;">
+        <div style="font-size:12px;font-weight:700;color:var(--text-muted);text-align:right;padding-right:16px;">JOURNEY →</div>
+        <div style="grid-column:2/-1;">
+          <div style="height:6px;border-radius:6px;background:linear-gradient(90deg,#6B00AA,#0066CC,#007A3D,#A000FF,#00C2CB);box-shadow:0 0 20px rgba(160,0,255,0.4);"></div>
+          <div style="display:flex;justify-content:space-around;margin-top:6px;">
+            <div style="width:12px;height:12px;border-radius:50%;background:#6B00AA;border:3px solid var(--navy);box-shadow:0 0 8px #6B00AA;"></div>
+            <div style="width:12px;height:12px;border-radius:50%;background:#0066CC;border:3px solid var(--navy);box-shadow:0 0 8px #0066CC;"></div>
+            <div style="width:12px;height:12px;border-radius:50%;background:#007A3D;border:3px solid var(--navy);box-shadow:0 0 8px #007A3D;"></div>
+            <div style="width:12px;height:12px;border-radius:50%;background:#A000FF;border:3px solid var(--navy);box-shadow:0 0 8px #A000FF;animation:pulse 2s infinite;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Journey Chart -->
+    <div class="chart-card wide fade-up delay-3" style="margin-top:40px;">
+      <div class="chart-title">Process Maturity Progression</div>
+      <div class="chart-subtitle">Key delivery indicators across quarters — from baseline challenges to excellence</div>
+      <div class="chart-canvas-wrap">
+        <canvas id="journeyChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ── SLIDE 3: PRACTICE AREAS ── -->
+  <section class="section-full" id="practices">
+    <div class="section-inner">
+      <div class="section-header fade-up">
+        <div class="section-label">Slide 3 · Practice Areas</div>
+        <h2 class="section-title">Best Practice <span class="title-accent">Frameworks</span></h2>
+        <p class="section-desc">Seven practice pillars driving delivery quality, operational stability, and governance excellence</p>
+      </div>
+
+      <div class="practices-grid">
+
+        <div class="practice-card pcard-release fade-up delay-1">
+          <div class="pcard-icon">🚀</div>
+          <div class="pcard-title">Release Process &amp; Coding Practices</div>
+          <ul class="pcard-items">
+            <li>Moved from ad hoc to structured 4–6 week releases</li>
+            <li>Release Calendar, RAG tracker &amp; rollback capability</li>
+            <li>Coding checklists &amp; SonarLint usage mandated</li>
+            <li>Tech Arch, UX &amp; PO reviews mandated</li>
+            <li>PT/UAT setup time reduced to 5 days</li>
+          </ul>
+          <div class="pcard-metric">
+            <div class="pcard-metric-val">100%</div>
+            <div class="pcard-metric-label">Release schedule<br>adherence</div>
+          </div>
+        </div>
+
+        <div class="practice-card pcard-defect fade-up delay-2">
+          <div class="pcard-icon">🐛</div>
+          <div class="pcard-title">Defect Management</div>
+          <ul class="pcard-items">
+            <li>Focused defect analysis &amp; fix cycles</li>
+            <li>PT/UAT defect cycle time: 5 → 2 days</li>
+            <li>SonarQube quality gate checks in pipelines</li>
+            <li>Structured defect categorization &amp; RCA processes</li>
+          </ul>
+          <div class="pcard-metric" style="background:rgba(204,51,0,0.1);border-color:rgba(204,51,0,0.3);">
+            <div class="pcard-metric-val" style="color:#FF8A6B;">7.44→2.26</div>
+            <div class="pcard-metric-label">Defect density<br>in PT &amp; UAT</div>
+          </div>
+        </div>
+
+        <div class="practice-card pcard-devops fade-up delay-3">
+          <div class="pcard-icon">⚙️</div>
+          <div class="pcard-title">DevOps &amp; Monitoring</div>
+          <ul class="pcard-items">
+            <li>API/DB/UI DataDog error reports &amp; analysis in production</li>
+            <li>SonarQube quality gate in build pipelines</li>
+            <li>In-sprint regression automation</li>
+            <li>Shift-left: prerelease metrics &amp; alerts in lower env</li>
+          </ul>
+          <div class="pcard-metric" style="background:rgba(0,194,203,0.1);border-color:rgba(0,194,203,0.3);">
+            <div class="pcard-metric-val" style="color:var(--accent-teal);">40%</div>
+            <div class="pcard-metric-label">Reduction in<br>Sonar code issues</div>
+          </div>
+        </div>
+
+        <div class="practice-card pcard-ops fade-up delay-1">
+          <div class="pcard-icon">🛠️</div>
+          <div class="pcard-title">Operations Support</div>
+          <ul class="pcard-items">
+            <li>Structured transition to Ops — seamless Dev handshakes</li>
+            <li>Ticket-based SLAs: 24×5 cross-region support</li>
+            <li>Covers Queries, Incidents, Defects &amp; Enhancements</li>
+            <li>Roles &amp; responsibilities clearly defined for key roles</li>
+          </ul>
+          <div class="pcard-metric" style="background:rgba(0,214,143,0.1);border-color:rgba(0,214,143,0.3);">
+            <div class="pcard-metric-val" style="color:var(--accent-green);">24×5</div>
+            <div class="pcard-metric-label">Cross-region<br>support coverage</div>
+          </div>
+        </div>
+
+        <div class="practice-card pcard-monitor fade-up delay-2">
+          <div class="pcard-icon">📡</div>
+          <div class="pcard-title">Proactive Monitoring</div>
+          <ul class="pcard-items">
+            <li>DataDog monitoring for API, UI &amp; DB in production</li>
+            <li>Daily DataDog error reports from UAT (proactive)</li>
+            <li>Server infra health reports every 8 hours</li>
+            <li>Page performance outliers trend dashboards</li>
+          </ul>
+          <div class="pcard-metric" style="background:rgba(255,107,53,0.1);border-color:rgba(255,107,53,0.3);">
+            <div class="pcard-metric-val" style="color:#FF8A6B;">↓</div>
+            <div class="pcard-metric-label">Reduction in<br>API/UI/DB errors</div>
+          </div>
+        </div>
+
+        <div class="practice-card pcard-plan fade-up delay-3">
+          <div class="pcard-icon">📊</div>
+          <div class="pcard-title">Planning &amp; Reporting</div>
+          <ul class="pcard-items">
+            <li>Roadmap visibility 2–3 releases ahead (PO, BA, Dev, Ops)</li>
+            <li>Story points based on complexity — functional &amp; technical</li>
+            <li>Program, Release &amp; Test dashboards operational</li>
+            <li>Periodic reports: Sonar issues, errors, defects</li>
+            <li>Team utilization visibility: 100%</li>
+          </ul>
+          <div class="pcard-metric" style="background:rgba(0,153,255,0.1);border-color:rgba(0,153,255,0.3);">
+            <div class="pcard-metric-val" style="color:#66CCFF;">700 SP</div>
+            <div class="pcard-metric-label">Team throughput<br>(from 350 SP)</div>
+          </div>
+        </div>
+
+        <div class="practice-card pcard-gov fade-up delay-1" style="grid-column:span 1;">
+          <div class="pcard-icon">🏛️</div>
+          <div class="pcard-title">Governance</div>
+          <ul class="pcard-items">
+            <li>GCC Ops process audit conducted — gaps bridged</li>
+            <li>Productivity &amp; quality metrics published</li>
+            <li>Leadership reporting on delivery outcomes</li>
+            <li>Agentic AI adoption for BA, Dev, Test &amp; Mgmt</li>
+            <li>Cross-pollinate processes to MMD &amp; Method One</li>
+          </ul>
+          <div class="pcard-metric" style="background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.3);">
+            <div class="pcard-metric-val" style="color:var(--accent-gold);">10%</div>
+            <div class="pcard-metric-label">Requirement volatility<br>(down from 40%)</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ── SLIDE 3: KEY METRICS (Charts) ── -->
+  <section class="section" id="metrics">
+    <div class="section-header fade-up">
+      <div class="section-label">Slide 3 · Key Metrics &amp; Impact</div>
+      <h2 class="section-title">Quantified <span class="title-accent">Outcomes</span></h2>
+      <p class="section-desc">Measurable improvements across quality, delivery performance, and team productivity</p>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid" style="margin-bottom:40px;">
+      <div class="kpi-card fade-up delay-1" style="--color:#FF8A6B;">
+        <span class="kpi-icon">🐛</span>
+        <div class="kpi-value">2.26<span class="kpi-suffix"></span></div>
+        <div class="kpi-label">Defect Density<br>(PT &amp; UAT)</div>
+        <span class="kpi-change positive">▼ from 7.44</span>
+      </div>
+      <div class="kpi-card fade-up delay-2" style="--color:var(--accent-teal);">
+        <span class="kpi-icon">⚡</span>
+        <div class="kpi-value">2<span class="kpi-suffix"> days</span></div>
+        <div class="kpi-label">Defect Cycle Time<br>(PT/UAT)</div>
+        <span class="kpi-change positive">▼ from 5 days</span>
+      </div>
+      <div class="kpi-card fade-up delay-3" style="--color:var(--purple-light);">
+        <span class="kpi-icon">📈</span>
+        <div class="kpi-value">700<span class="kpi-suffix"> SP</span></div>
+        <div class="kpi-label">Team Throughput<br>per Sprint</div>
+        <span class="kpi-change positive">▲ from 350 SP</span>
+      </div>
+      <div class="kpi-card fade-up delay-4" style="--color:var(--accent-green);">
+        <span class="kpi-icon">🎯</span>
+        <div class="kpi-value">100<span class="kpi-suffix">%</span></div>
+        <div class="kpi-label">Release Schedule<br>Adherence</div>
+        <span class="kpi-change positive">▲ from ~60%</span>
+      </div>
+      <div class="kpi-card fade-up delay-5" style="--color:#FF6B35;">
+        <span class="kpi-icon">🔒</span>
+        <div class="kpi-value">40<span class="kpi-suffix">%</span></div>
+        <div class="kpi-label">Sonar Code Issues<br>Reduction</div>
+        <span class="kpi-change positive">▼ continuous</span>
+      </div>
+      <div class="kpi-card fade-up delay-1" style="--color:var(--accent-gold);">
+        <span class="kpi-icon">📋</span>
+        <div class="kpi-value">10<span class="kpi-suffix">%</span></div>
+        <div class="kpi-label">Requirement<br>Volatility</div>
+        <span class="kpi-change positive">▼ from 40%</span>
+      </div>
+      <div class="kpi-card fade-up delay-2" style="--color:#66CCFF;">
+        <span class="kpi-icon">👥</span>
+        <div class="kpi-value">100<span class="kpi-suffix">%</span></div>
+        <div class="kpi-label">Team Utilization<br>Visibility</div>
+        <span class="kpi-change target">● Full Visibility</span>
+      </div>
+      <div class="kpi-card fade-up delay-3" style="--color:var(--accent-green);">
+        <span class="kpi-icon">🗓️</span>
+        <div class="kpi-value">4–6<span class="kpi-suffix"> wks</span></div>
+        <div class="kpi-label">Structured Release<br>Cadence</div>
+        <span class="kpi-change positive">✓ Standardized</span>
+      </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="charts-grid">
+      <div class="chart-card fade-up delay-1">
+        <div class="chart-title">Defect Density — PT &amp; UAT</div>
+        <div class="chart-subtitle">Progressive reduction from Q2 FY25 baseline</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="defectChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card fade-up delay-2">
+        <div class="chart-title">Team Throughput (Story Points)</div>
+        <div class="chart-subtitle">Sprint capacity growth over quarters</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="throughputChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card fade-up delay-3">
+        <div class="chart-title">Code Quality — Sonar Issues Trend</div>
+        <div class="chart-subtitle">40% reduction in SonarQube issues</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="sonarChart"></canvas>
+        </div>
+      </div>
+
+      <div class="chart-card fade-up delay-4">
+        <div class="chart-title">Key Practice Improvement Scores</div>
+        <div class="chart-subtitle">Maturity score across 7 practice areas (1–10 scale)</div>
+        <div class="chart-canvas-wrap">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ── SLIDE 4: MATURITY MODEL ── -->
+  <section class="section-full" id="maturity">
+    <div class="section-inner">
+      <div class="section-header fade-up">
+        <div class="section-label">Slide 4 · Maturity Model &amp; Road Ahead</div>
+        <h2 class="section-title">ISP Program <span class="title-accent">Maturity Journey</span></h2>
+        <p class="section-desc">Five-stage maturity progression — from delivery rigor to continuous improvement leadership</p>
+      </div>
+
+      <div class="maturity-track fade-up delay-1">
+        <div class="maturity-step m1">
+          <span class="maturity-icon">🔥</span>
+          <div class="maturity-label">Delivery Rigor</div>
+          <div class="maturity-desc">Structured releases, defect management, code quality gates &amp; early reviews established</div>
+          <span class="maturity-badge">Q3 FY25</span>
+        </div>
+        <div class="maturity-step m2">
+          <span class="maturity-icon">🏛️</span>
+          <div class="maturity-label">Platform Stability</div>
+          <div class="maturity-desc">24×5 operations support, DataDog monitoring, proactive alerting &amp; rollback capability</div>
+          <span class="maturity-badge">Q4 FY25</span>
+        </div>
+        <div class="maturity-step m3">
+          <span class="maturity-icon">📊</span>
+          <div class="maturity-label">Governance</div>
+          <div class="maturity-desc">Leadership dashboards, GCC audit, publish productivity &amp; quality metrics at program level</div>
+          <span class="maturity-badge">Q4 FY25</span>
+        </div>
+        <div class="maturity-step m4">
+          <span class="maturity-icon">🤖</span>
+          <div class="maturity-label">New Level Maturity</div>
+          <div class="maturity-desc">AI-DC Agent adoption, agentic skills for all roles, shift-left testing &amp; DevOps automation</div>
+          <span class="maturity-badge">Q1 FY26</span>
+        </div>
+        <div class="maturity-step m5">
+          <span class="maturity-icon">🚀</span>
+          <div class="maturity-label">Continuous Improvement</div>
+          <div class="maturity-desc">Leader boards, proactive indicators, program-wide metrics, scale to all programs</div>
+          <span class="maturity-badge">Q2 FY26 →</span>
+        </div>
+      </div>
+
+      <!-- Outcomes Banner -->
+      <div class="outcomes-banner fade-up delay-2" style="margin-top:48px;">
+        <div class="outcomes-title">🏆 Cumulative Program Outcomes — FY26</div>
+        <div class="outcomes-grid">
+          <div class="outcome-item">
+            <div class="outcome-icon">📉</div>
+            <div>
+              <div class="outcome-val">70%</div>
+              <div class="outcome-label">Reduction in defect density (7.44 → 2.26)</div>
+            </div>
+          </div>
+          <div class="outcome-item">
+            <div class="outcome-icon">⚡</div>
+            <div>
+              <div class="outcome-val">2×</div>
+              <div class="outcome-label">Team throughput growth (350 → 700 SP)</div>
+            </div>
+          </div>
+          <div class="outcome-item">
+            <div class="outcome-icon">🎯</div>
+            <div>
+              <div class="outcome-val">100%</div>
+              <div class="outcome-label">On-time release delivery track record</div>
+            </div>
+          </div>
+          <div class="outcome-item">
+            <div class="outcome-icon">🔒</div>
+            <div>
+              <div class="outcome-val">40%</div>
+              <div class="outcome-label">Sonar code quality issues eliminated</div>
+            </div>
+          </div>
+          <div class="outcome-item">
+            <div class="outcome-icon">📋</div>
+            <div>
+              <div class="outcome-val">75%</div>
+              <div class="outcome-label">Requirement volatility controlled (40% → 10%)</div>
+            </div>
+          </div>
+          <div class="outcome-item">
+            <div class="outcome-icon">🤖</div>
+            <div>
+              <div class="outcome-val">AI</div>
+              <div class="outcome-label">Agentic AI adopted across BA, Dev, Test &amp; Mgmt</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final Maturity Chart -->
+      <div class="chart-card fade-up delay-3" style="margin-top:40px;">
+        <div class="chart-title">Program Maturity Score by Dimension</div>
+        <div class="chart-subtitle">FY25 Q2 baseline vs FY26 Q1 Current — normalized 0–100 scale</div>
+        <div class="chart-canvas-wrap" style="height:300px;">
+          <canvas id="maturityChart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ── -->
+  <footer class="footer">
+    <strong>ISP Best Practices FY26</strong> · Digital Thread Program · Executive Review<br>
+    Prepared for Senior Leadership · <strong>Confidential</strong> · March 2026
+  </footer>
+
+</div>
+
+<script>
+  // ── INTERSECTION OBSERVER ──
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // ── SCROLL NAV ──
+  function scrollTo(id) {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  // ── CHART DEFAULTS ──
+  Chart.defaults.color = 'rgba(255,255,255,0.6)';
+  Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
+  Chart.defaults.font.family = "'Inter', sans-serif";
+
+  const quarters = ['Q2 FY25\n(Baseline)', 'Q3 FY25', 'Q4 FY25', 'Q1 FY26', 'Q2 FY26'];
+
+  // ── JOURNEY CHART (multi-line) ──
+  new Chart(document.getElementById('journeyChart'), {
+    type: 'line',
+    data: {
+      labels: quarters,
+      datasets: [
+        {
+          label: 'Defect Density (inverted: 10 = best)',
+          data: [2, 4.5, 6, 8, 8.5],
+          borderColor: '#FF8A6B', backgroundColor: 'rgba(255,138,107,0.1)',
+          fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 8
+        },
+        {
+          label: 'Release Adherence %',
+          data: [40, 60, 75, 90, 100],
+          borderColor: '#00D68F', backgroundColor: 'rgba(0,214,143,0.08)',
+          fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 8
+        },
+        {
+          label: 'Process Maturity Score',
+          data: [20, 40, 60, 78, 90],
+          borderColor: '#A000FF', backgroundColor: 'rgba(160,0,255,0.08)',
+          fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 8
+        },
+        {
+          label: 'Throughput (% of target)',
+          data: [50, 60, 72, 90, 100],
+          borderColor: '#00C2CB', backgroundColor: 'rgba(0,194,203,0.06)',
+          fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 8
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16, font: { size: 11 } } },
+        tooltip: { mode: 'index', intersect: false }
+      },
+      scales: {
+        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { font: { size: 11 } } },
+        y: {
+          min: 0, max: 100,
+          grid: { color: 'rgba(255,255,255,0.04)' },
+          ticks: { font: { size: 11 }, callback: v => v + '%' }
+        }
+      },
+      interaction: { mode: 'index', intersect: false }
+    }
+  });
+
+  // ── DEFECT DENSITY CHART ──
+  new Chart(document.getElementById('defectChart'), {
+    type: 'bar',
+    data: {
+      labels: quarters,
+      datasets: [{
+        label: 'Defect Density',
+        data: [7.44, 5.8, 4.2, 2.9, 2.26],
+        backgroundColor: ['rgba(204,51,0,0.7)', 'rgba(160,0,255,0.6)', 'rgba(0,102,204,0.6)', 'rgba(0,122,61,0.6)', 'rgba(0,194,203,0.6)'],
+        borderColor: ['#CC3300', '#A000FF', '#0066CC', '#007A3D', '#00C2CB'],
+        borderWidth: 2, borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+        y: { min: 0, max: 9, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { font: { size: 10 } } }
+      }
+    }
+  });
+
+  // ── THROUGHPUT CHART ──
+  new Chart(document.getElementById('throughputChart'), {
+    type: 'bar',
+    data: {
+      labels: quarters,
+      datasets: [{
+        label: 'Story Points',
+        data: [350, 420, 520, 630, 700],
+        backgroundColor: 'rgba(160,0,255,0.3)',
+        borderColor: '#A000FF', borderWidth: 2, borderRadius: 8
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+        y: { min: 0, max: 800, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { font: { size: 10 }, stepSize: 200 } }
+      }
+    }
+  });
+
+  // ── SONAR CHART ──
+  new Chart(document.getElementById('sonarChart'), {
+    type: 'line',
+    data: {
+      labels: quarters,
+      datasets: [{
+        label: 'Sonar Issues (Index)',
+        data: [100, 88, 75, 65, 60],
+        borderColor: '#00C2CB', backgroundColor: 'rgba(0,194,203,0.12)',
+        fill: true, tension: 0.4, pointRadius: 5, pointHoverRadius: 8,
+        pointBackgroundColor: '#00C2CB'
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 } } },
+        y: { min: 50, max: 110, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { font: { size: 10 }, callback: v => v + ' idx' } }
+      }
+    }
+  });
+
+  // ── RADAR CHART ──
+  new Chart(document.getElementById('radarChart'), {
+    type: 'radar',
+    data: {
+      labels: ['Release Process', 'Defect Mgmt', 'DevOps', 'Ops Support', 'Monitoring', 'Planning', 'Governance'],
+      datasets: [
+        {
+          label: 'Q2 FY25 (Baseline)',
+          data: [2, 2, 2, 1, 1, 2, 1],
+          borderColor: 'rgba(204,51,0,0.7)', backgroundColor: 'rgba(204,51,0,0.1)',
+          borderWidth: 2, pointBackgroundColor: '#CC3300'
+        },
+        {
+          label: 'Q1 FY26 (Current)',
+          data: [9, 8, 8, 9, 8, 8, 8],
+          borderColor: 'rgba(160,0,255,0.9)', backgroundColor: 'rgba(160,0,255,0.15)',
+          borderWidth: 2, pointBackgroundColor: '#A000FF'
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16, font: { size: 11 } } } },
+      scales: {
+        r: {
+          min: 0, max: 10, ticks: { stepSize: 2, font: { size: 10 }, color: 'rgba(255,255,255,0.4)' },
+          grid: { color: 'rgba(255,255,255,0.08)' },
+          pointLabels: { font: { size: 11 }, color: 'rgba(255,255,255,0.7)' }
+        }
+      }
+    }
+  });
+
+  // ── MATURITY BAR CHART ──
+  const maturityDims = ['Delivery Rigor', 'Platform Stability', 'Governance', 'AI / New Maturity', 'Cont. Improvement'];
+  new Chart(document.getElementById('maturityChart'), {
+    type: 'bar',
+    data: {
+      labels: maturityDims,
+      datasets: [
+        {
+          label: 'FY25 Q2 Baseline',
+          data: [10, 10, 5, 0, 0],
+          backgroundColor: 'rgba(204,51,0,0.5)', borderColor: '#CC3300', borderWidth: 2, borderRadius: 6
+        },
+        {
+          label: 'FY26 Q1 Current',
+          data: [90, 88, 82, 75, 55],
+          backgroundColor: 'rgba(160,0,255,0.6)', borderColor: '#A000FF', borderWidth: 2, borderRadius: 6
+        },
+        {
+          label: 'FY26 Q2 Target',
+          data: [95, 93, 90, 90, 85],
+          backgroundColor: 'rgba(0,194,203,0.4)', borderColor: '#00C2CB', borderWidth: 2, borderRadius: 6,
+          borderDash: [6, 3]
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: {
+        legend: { position: 'bottom', labels: { boxWidth: 12, padding: 16, font: { size: 11 } } }
+      },
+      scales: {
+        x: { min: 0, max: 100, grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { callback: v => v + '%', font: { size: 10 } } },
+        y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+      }
+    }
+  });
+
+  // ── COUNTER ANIMATION ──
+  function animateCounter(el, end, suffix = '', duration = 1500) {
+    let start = 0;
+    const step = end / (duration / 16);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= end) { clearInterval(timer); el.textContent = end + suffix; return; }
+      el.textContent = (end < 10 ? start.toFixed(2) : Math.round(start)) + suffix;
+    }, 16);
+  }
+
+  // Animate KPIs when visible
+  const kpiObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (!e.isIntersecting || e.target.dataset.animated) return;
+      e.target.dataset.animated = 'true';
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll('.kpi-card').forEach(el => kpiObserver.observe(el));
+</script>
+</body>
+</html>

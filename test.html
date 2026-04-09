@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connection Test - MyISP Tools</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .test-container {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            max-width: 600px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        h1 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .success {
+            color: #28a745;
+            font-size: 48px;
+            margin: 20px 0;
+        }
+        .info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>✅ Connection Successful!</h1>
+        <div class="success">✓</div>
+        <p style="font-size: 18px; color: #333;">
+            You can access MyISP Internal Tools from this computer.
+        </p>
+        
+        <div class="info">
+            <strong>✓ Network Connection:</strong> Working<br>
+            <strong>✓ Web Server:</strong> Accessible<br>
+            <strong>✓ Browser:</strong> Compatible<br>
+            <br>
+            <strong>Access URL:</strong> http://192.168.1.2:8000
+        </div>
+
+        <p style="color: #666; margin-top: 20px;">
+            If you see this page, everything is working correctly!
+        </p>
+
+        <a href="index.html" class="btn">Go to MyISP Internal Tools</a>
+    </div>
+
+    <script>
+        // Display connection info
+        document.addEventListener('DOMContentLoaded', function() {
+            const info = document.querySelector('.info');
+            const date = new Date().toLocaleString();
+            info.innerHTML += `<br><strong>Connected at:</strong> ${date}`;
+            info.innerHTML += `<br><strong>Your Browser:</strong> ${navigator.userAgent.split('(')[0].trim()}`;
+        });
+    </script>
+</body>
+</html>

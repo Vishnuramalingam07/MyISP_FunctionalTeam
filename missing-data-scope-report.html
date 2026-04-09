@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Missing Data for US Scope Report - MyISP Internal Tools</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #reportLinkContainer a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3) !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="report-container">
+        <div class="report-header">
+            <h1>🔎 Missing Data for US Scope Report</h1>
+            <p>Generate missing data report for US scope from Azure DevOps work items</p>
+        </div>
+
+        <div class="report-content">
+            <div class="report-info">
+                <h3>About Missing Data for US Scope Report</h3>
+                <ul>
+                    <li>Fetches all active US scope work items from Azure DevOps</li>
+                    <li>Identifies missing fields: mySP Initiative, Sub Initiative, TextVerification, Parent, Requirement Requestor</li>
+                    <li>Groups results by BA Created and PO/Dev Team Created</li>
+                    <li>Provides filterable Summary and Details views</li>
+                </ul>
+            </div>
+
+            <div class="report-form">
+                <div style="margin-bottom: 20px;">
+                    <label for="queryIdInput" style="display: block; font-weight: 600; color: #374151; margin-bottom: 6px; font-size: 14px;">Azure DevOps Query ID</label>
+                    <input
+                        type="text"
+                        id="queryIdInput"
+                        placeholder="e.g. 730dc08e-2b34-4d8f-a74e-6b7c74a05071"
+                        value="730dc08e-2b34-4d8f-a74e-6b7c74a05071"
+                        style="width: 100%; padding: 10px 14px; font-size: 14px; border: 1px solid #d1d5db; border-radius: 8px; outline: none; font-family: monospace; box-sizing: border-box; transition: border-color 0.2s;"
+                        onfocus="this.style.borderColor='#06b6d4'"
+                        onblur="this.style.borderColor='#d1d5db'"
+                    />
+                    <p style="font-size: 12px; color: #6b7280; margin-top: 4px;">Paste the WIQL Query ID from Azure DevOps. This will be used to fetch work items at runtime.</p>
+                </div>
+                <p style="text-align: center; color: #666; margin-bottom: 20px;">Click the button below to generate the Missing Data for US Scope Report</p>
+                <button class="generate-btn" onclick="generateReport()">Generate Report</button>
+
+                <!-- Report link container (hidden initially) -->
+                <div id="reportLinkContainer" style="display: none; margin-top: 20px; padding: 20px; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); border-radius: 12px; text-align: center;">
+                    <p style="color: white; font-weight: 600; margin-bottom: 14px; font-size: 16px;">✅ Report Generated Successfully!</p>
+                    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                        <a id="reportLink" href="#" target="_blank"
+                           style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; background: white; color: #0891b2; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.3s;">
+                            📊 Open Report
+                        </a>
+                        <button id="downloadBtn" onclick="downloadReport()"
+                           style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; background: #10b981; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 15px; box-shadow: 0 4px 15px rgba(16,185,129,0.4); cursor: pointer; transition: all 0.3s; font-family: inherit;"
+                           title="Downloads the HTML report to your local machine">
+                            ⬇️ Download HTML
+                        </button>
+                    </div>
+                    <p style="color: rgba(255,255,255,0.75); font-size: 12px; margin-top: 10px;">⬇️ Saves directly to your local Downloads folder</p>
+                </div>
+            </div>
+
+            <a href="index.html" class="back-button">← Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        let pollInterval = null;
+
+        async function generateReport() {
+            const submitBtn = document.querySelector('.generate-btn');
+            const originalText = submitBtn.innerHTML;
+            const reportLinkContainer = document.getElementById('reportLinkContainer');
+            const reportLink = document.getElementById('reportLink');
+
+            // Hide any previous report link
+            reportLinkContainer.style.display = 'none';
+
+            try {
+                // Disable button and show loading state
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '⏳ Starting Generation...';
+                submitBtn.style.opacity = '0.7';
+
+                // Read the Query ID entered by the user
+                const queryId = document.getElementById('queryIdInput').value.trim();
+                if (!queryId) {
+                    alert('Please enter a valid Azure DevOps Query ID.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.style.opacity = '';
+                    return;
+                }
+
+                // Start the report generation (returns immediately)
+                const response = await fetch('/api/generate-missing-scope-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query_id: queryId }),
+                    cache: 'no-cache'
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server error: ${response.status} - ${errorText}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success && result.status === 'in_progress') {
+                    submitBtn.innerHTML = '⏳ Generating Report (fetching data from Azure DevOps)...';
+                    pollForCompletion(submitBtn, originalText, reportLinkContainer, reportLink);
+                } else if (!result.success) {
+                    throw new Error(result.error || 'Failed to start report generation');
+                }
+
+            } catch (error) {
+                console.error('Error generating report:', error);
+
+                submitBtn.innerHTML = '❌ Generation Failed';
+                submitBtn.style.backgroundColor = '#ef4444';
+
+                alert('❌ Error generating report:\n\n' + (error.message || 'Unknown error') + '\n\nPlease try refreshing the page and generating again.');
+
+                setTimeout(() => {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.style.backgroundColor = '';
+                    submitBtn.style.opacity = '';
+                    submitBtn.disabled = false;
+                }, 3000);
+            }
+        }
+
+        async function pollForCompletion(submitBtn, originalText, reportLinkContainer, reportLink) {
+            let pollCount = 0;
+            const maxPolls = 60; // 5 minutes (60 × 5 s)
+
+            pollInterval = setInterval(async () => {
+                pollCount++;
+
+                try {
+                    const response = await fetch('/api/check-missing-scope-report-status', {
+                        method: 'GET',
+                        cache: 'no-cache'
+                    });
+
+                    const status = await response.json();
+
+                    if (status.status === 'completed') {
+                        clearInterval(pollInterval);
+
+                        submitBtn.innerHTML = '✅ Report Generated!';
+                        submitBtn.style.backgroundColor = '#10b981';
+
+                        reportLink.href = status.report_file;
+                        reportLinkContainer.dataset.reportFile = status.report_file;
+                        reportLinkContainer.style.display = 'block';
+
+                        reportLinkContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.style.backgroundColor = '';
+                            submitBtn.style.opacity = '';
+                            submitBtn.disabled = false;
+                        }, 2000);
+
+                    } else if (status.status === 'error') {
+                        clearInterval(pollInterval);
+
+                        submitBtn.innerHTML = '❌ Generation Failed';
+                        submitBtn.style.backgroundColor = '#ef4444';
+
+                        alert('❌ Error generating report:\n\n' + status.error);
+
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.style.backgroundColor = '';
+                            submitBtn.style.opacity = '';
+                            submitBtn.disabled = false;
+                        }, 3000);
+
+                    } else if (status.status === 'in_progress') {
+                        const dots = '.'.repeat((pollCount % 3) + 1);
+                        submitBtn.innerHTML = `⏳ Generating Report${dots}`;
+                    }
+
+                    if (pollCount >= maxPolls) {
+                        clearInterval(pollInterval);
+                        submitBtn.innerHTML = '⏱️ Taking longer than expected';
+                        submitBtn.style.backgroundColor = '#f59e0b';
+
+                        alert('⏱️ Report generation is taking longer than expected.\n\nThe server is still working on it. Please check back in a moment or refresh the page.');
+
+                        setTimeout(() => {
+                            submitBtn.innerHTML = originalText;
+                            submitBtn.style.backgroundColor = '';
+                            submitBtn.style.opacity = '';
+                            submitBtn.disabled = false;
+                        }, 3000);
+                    }
+
+                } catch (error) {
+                    console.error('Error checking status:', error);
+                }
+
+            }, 5000); // Poll every 5 seconds
+        }
+
+        async function downloadReport() {
+            const container  = document.getElementById('reportLinkContainer');
+            const btn        = document.getElementById('downloadBtn');
+            const reportFile = container.dataset.reportFile;
+
+            if (!reportFile) {
+                alert('No report available. Please generate the report first.');
+                return;
+            }
+
+            const originalHtml = btn.innerHTML;
+            btn.disabled  = true;
+            btn.innerHTML = '⏳ Preparing download...';
+
+            try {
+                const response = await fetch(reportFile, { cache: 'no-cache' });
+                if (!response.ok) throw new Error(`Server returned ${response.status}`);
+
+                const htmlContent = await response.text();
+
+                const blob    = new Blob([htmlContent], { type: 'text/html' });
+                const blobUrl = URL.createObjectURL(blob);
+
+                const anchor       = document.createElement('a');
+                anchor.href        = blobUrl;
+                anchor.download    = 'Missing_Data_Report.html';
+                anchor.style.display = 'none';
+                document.body.appendChild(anchor);
+                anchor.click();
+
+                document.body.removeChild(anchor);
+                setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+
+                btn.innerHTML = '✅ Downloaded!';
+                btn.style.background = '#059669';
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 2500);
+
+            } catch (err) {
+                console.error('Download error:', err);
+                btn.innerHTML = '❌ Failed';
+                btn.style.background = '#ef4444';
+                alert('❌ Could not download the report:\n' + err.message);
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.style.background = '';
+                    btn.disabled = false;
+                }, 3000);
+            }
+        }
+
+        window.addEventListener('beforeunload', () => {
+            if (pollInterval) clearInterval(pollInterval);
+        });
+    </script>
+</body>
+</html>

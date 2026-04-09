@@ -1,0 +1,272 @@
+═══════════════════════════════════════════════════════════════════════
+   ACCESS CONTROL FOR ATTENDANCE TRACKER
+═══════════════════════════════════════════════════════════════════════
+
+The attendance tracker now includes access control to ensure only 
+authorized users can access the system.
+
+═══════════════════════════════════════════════════════════════════════
+   HOW IT WORKS
+═══════════════════════════════════════════════════════════════════════
+
+1. When a user navigates to the attendance tracker, the system:
+   - Detects their Windows username automatically
+   - Sends it to the Flask server for verification
+   - Checks if the username exists in Access.csv
+
+2. If the user is authorized:
+   ✅ They can access the attendance tracker normally
+
+3. If the user is NOT authorized:
+   ❌ They see an error message: "You do not have permission to access"
+   ❌ They are automatically redirected to the home page (index.html)
+
+═══════════════════════════════════════════════════════════════════════
+   ACCESS.CSV FILE FORMAT
+═══════════════════════════════════════════════════════════════════════
+
+Location: C:\Users\vishnu.ramalingam\MyISP_Tools\Attendance\Access.csv
+
+Format:
+```csv
+Username,Access Level,Department
+vishnu.ramalingam,Admin,IT
+john.smith,User,HR
+jane.doe,User,Finance
+robert.johnson,User,Operations
+sarah.williams,Manager,Management
+```
+
+Columns:
+- Username: Windows username (case-insensitive)
+- Access Level: Admin, Manager, or User (informational only)
+- Department: User's department (informational only)
+
+═══════════════════════════════════════════════════════════════════════
+   ADDING NEW USERS
+═══════════════════════════════════════════════════════════════════════
+
+METHOD 1: Edit Access.csv directly
+-----------------------------------
+1. Open: C:\Users\vishnu.ramalingam\MyISP_Tools\Attendance\Access.csv
+2. Add a new line with the user's information:
+   ```
+   new.username,User,Department Name
+   ```
+3. Save the file
+4. No server restart needed - changes are immediate
+
+METHOD 2: Excel
+---------------
+1. Open Access.csv in Excel
+2. Add new row with username, access level, department
+3. Save as CSV (not Excel format!)
+4. Make sure format stays as CSV
+
+IMPORTANT:
+- Username must match the Windows login username exactly
+- Username comparison is case-insensitive
+- Don't add duplicate usernames
+
+═══════════════════════════════════════════════════════════════════════
+   REMOVING USERS
+═══════════════════════════════════════════════════════════════════════
+
+1. Open Access.csv
+2. Delete the entire row for that user
+3. Save the file
+4. That user will be denied access immediately
+
+═══════════════════════════════════════════════════════════════════════
+   FINDING WINDOWS USERNAME
+═══════════════════════════════════════════════════════════════════════
+
+To find a user's Windows username:
+
+Method 1 - Command Prompt:
+--------------------------
+Open Command Prompt and type:
+```
+echo %USERNAME%
+```
+
+Method 2 - PowerShell:
+---------------------
+Open PowerShell and type:
+```powershell
+$env:USERNAME
+```
+
+Method 3 - Check when denied:
+------------------------------
+When a user is denied access, the error message shows their username:
+"Current user: john.smith"
+
+═══════════════════════════════════════════════════════════════════════
+   TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════════════
+
+Problem: "Cannot verify access permissions - Flask server not running"
+----------------------------------------------------------------------
+Solution:
+1. Start the Flask server:
+   ```powershell
+   cd C:\Users\vishnu.ramalingam\MyISP_Tools
+   python app.py
+   ```
+2. Access the tracker through server URL:
+   http://localhost:8000/Attendance/team-attendance-tracker-sharepoint.html
+3. Do NOT open the HTML file by double-clicking it
+
+Problem: User has correct username but still denied access
+-----------------------------------------------------------
+Solution:
+1. Check Access.csv for exact username match
+2. Verify no extra spaces in Access.csv
+3. Check that file is saved as CSV format (not Excel)
+4. Username is case-insensitive, so "John.Smith" = "john.smith"
+
+Problem: Access.csv file not found
+-----------------------------------
+Solution:
+The system auto-creates Access.csv with the current user when first accessed.
+If you need to recreate it:
+1. Delete existing Access.csv
+2. Access the attendance tracker
+3. System creates new Access.csv with your username
+4. Add other users manually
+
+Problem: Error when opening Access.csv in Excel
+------------------------------------------------
+Solution:
+1. Close Excel completely
+2. Make sure file is not open elsewhere
+3. If corrupted, delete and let system recreate it
+
+Problem: Changes to Access.csv not taking effect
+-------------------------------------------------
+Solution:
+1. Make sure file is saved properly as CSV
+2. Check file location is correct (Attendance folder)
+3. Try refreshing the browser page (Ctrl+F5)
+4. No server restart needed
+
+═══════════════════════════════════════════════════════════════════════
+   SECURITY NOTES
+═══════════════════════════════════════════════════════════════════════
+
+✓ Access check happens server-side (more secure)
+✓ Username is detected from Windows environment
+✓ Cannot be bypassed from browser
+✓ Changes to Access.csv are immediate
+
+⚠️  Limitations:
+- Users need Flask server running to verify access
+- Access.csv should be protected from unauthorized edits
+- This is basic authentication, not enterprise-grade security
+
+═══════════════════════════════════════════════════════════════════════
+   API ENDPOINT
+═══════════════════════════════════════════════════════════════════════
+
+Endpoint: GET /api/auth/check-access
+
+Response when authorized:
+{
+    "success": true,
+    "has_access": true,
+    "username": "john.smith",
+    "message": "Access granted"
+}
+
+Response when denied (HTTP 403):
+{
+    "success": true,
+    "has_access": false,
+    "username": "unknown.user",
+    "message": "Access denied: User not found in authorized list"
+}
+
+═══════════════════════════════════════════════════════════════════════
+   TESTING ACCESS CONTROL
+═══════════════════════════════════════════════════════════════════════
+
+Test 1: Test with your own username
+------------------------------------
+1. Your username should be in Access.csv automatically
+2. Open: http://localhost:8000/Attendance/team-attendance-tracker-sharepoint.html
+3. You should see the attendance tracker load normally
+4. Check browser console (F12) - should see: "✅ Access granted"
+
+Test 2: Test denial by removing yourself
+-----------------------------------------
+1. Open Access.csv
+2. Comment out or delete your username line
+3. Save file
+4. Refresh attendance tracker page
+5. Should see error: "You do not have permission to access"
+6. Should redirect to index.html
+7. Add yourself back to Access.csv!
+
+Test 3: Test with non-existent user
+------------------------------------
+1. Temporarily modify Access.csv to only include fake users
+2. Refresh attendance tracker
+3. Should be denied access
+4. Restore original Access.csv
+
+═══════════════════════════════════════════════════════════════════════
+   BULK USER MANAGEMENT
+═══════════════════════════════════════════════════════════════════════
+
+If you need to add many users at once:
+
+1. Export list of usernames from Active Directory or HR system
+2. Format as CSV with headers: Username,Access Level,Department
+3. Replace Access.csv with your new file
+4. All users will have immediate access
+
+Example PowerShell to get all domain users:
+```powershell
+Get-ADUser -Filter * | Select-Object SamAccountName | 
+    Export-Csv -Path "users.csv" -NoTypeInformation
+```
+
+Then edit the CSV to add Access Level and Department columns.
+
+═══════════════════════════════════════════════════════════════════════
+   BACKUP AND RECOVERY
+═══════════════════════════════════════════════════════════════════════
+
+Recommended: Keep a backup of Access.csv
+
+Create backup:
+```powershell
+Copy-Item "C:\Users\vishnu.ramalingam\MyISP_Tools\Attendance\Access.csv" `
+    "C:\Users\vishnu.ramalingam\MyISP_Tools\Attendance\Access.csv.backup"
+```
+
+Restore from backup:
+```powershell
+Copy-Item "C:\Users\vishnu.ramalingam\MyISP_Tools\Attendance\Access.csv.backup" `
+    "C:\Users\vishnu.ramalingam\MyISP_Tools\Attendance\Access.csv"
+```
+
+═══════════════════════════════════════════════════════════════════════
+   SUMMARY
+═══════════════════════════════════════════════════════════════════════
+
+✓ Access control is now active on attendance tracker
+✓ Only users in Access.csv can access the system
+✓ Unauthorized users are shown error and redirected
+✓ Changes to Access.csv are immediate (no restart needed)
+✓ System auto-creates Access.csv with current user if missing
+✓ Server-side validation prevents browser-based bypasses
+
+To manage users: Edit Access.csv in Attendance folder
+To test: Try accessing with and without your username in Access.csv
+
+═══════════════════════════════════════════════════════════════════════
+
+Generated: March 6, 2026
+Feature: Access Control for Attendance Tracker

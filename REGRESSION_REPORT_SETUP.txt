@@ -1,0 +1,107 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║         REGRESSION REPORT - AUTO-GENERATION FEATURE                  ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+✅ SETUP COMPLETE!
+
+═══════════════════════════════════════════════════════════════════════
+
+📋 WHAT'S NEW:
+
+The Regression Report tool now automatically generates reports from Azure 
+DevOps when you click "Generate Report" button!
+
+═══════════════════════════════════════════════════════════════════════
+
+🚀 HOW TO USE:
+
+1. START THE SERVER:
+   - Double-click "Start-Server.bat" or "Start-Server.ps1"
+   - The Flask server will start on port 8000
+   - Keep the window open while using the tool
+   
+2. OPEN THE WEBSITE:
+   - Go to: http://localhost:8000
+   - Or share with team: http://192.168.1.2:8000
+   
+3. GENERATE REGRESSION REPORT:
+   - Click on "Regression Report" from the home page
+   - Click the "Generate Report" button
+   - Wait 1-2 minutes while it fetches data from Azure DevOps
+   - The report will automatically open when ready
+
+═══════════════════════════════════════════════════════════════════════
+
+🔧 TECHNICAL DETAILS:
+
+NEW FILES CREATED:
+✓ app.py - Flask backend server with API endpoints
+✓ Updated regression-report.html - New UI for report generation
+✓ Updated Start-Server.ps1 and Start-Server.bat
+
+HOW IT WORKS:
+1. Click "Generate Report" → Calls Flask API endpoint
+2. Flask runs "RegReport 1_Updated 1.py" Python script
+3. Script fetches data from Azure DevOps
+4. HTML report is generated with timestamp
+5. Browser automatically opens the generated report
+
+═══════════════════════════════════════════════════════════════════════
+
+📊 REPORT FILES:
+
+Generated reports are saved with timestamps:
+- Format: regression_execution_report_YYYYMMDD_HHMMSS.html
+- Location: C:\Users\vishnu.ramalingam\MyISP_Tools\
+- Example: regression_execution_report_20260217_202307.html
+
+═══════════════════════════════════════════════════════════════════════
+
+⚠️ REQUIREMENTS:
+
+✓ Python installed (already have it)
+✓ Flask package (auto-installed by Start-Server scripts)
+✓ Azure DevOps access (configured in RegReport script)
+✓ Internet connection (to fetch data from Azure DevOps)
+
+═══════════════════════════════════════════════════════════════════════
+
+🔍 TROUBLESHOOTING:
+
+PROBLEM: "Script Not Found" error
+SOLUTION: Ensure "RegReport 1_Updated 1.py" exists in the 
+          Regression_Report folder
+
+PROBLEM: Report generation times out
+SOLUTION: Check internet connection and Azure DevOps access
+
+PROBLEM: Port 8000 already in use
+SOLUTION: Close any other servers, or change port in app.py
+
+PROBLEM: Flask not installed
+SOLUTION: Run: python -m pip install flask
+
+═══════════════════════════════════════════════════════════════════════
+
+🌐 SHARING WITH TEAM:
+
+FOR LOCAL NETWORK:
+Share this URL: http://192.168.1.2:8000
+- Team must be on same network
+- Server must be running on your machine
+
+FOR REMOTE ACCESS (VS CODE TUNNEL):
+1. Open PORTS panel in VS Code (Ctrl+J)
+2. Right-click port 8000 → Port Visibility → Public
+3. Copy the forwarded address
+4. Share that URL with remote team members
+
+═══════════════════════════════════════════════════════════════════════
+
+📧 QUESTIONS OR ISSUES?
+
+Contact: vishnu.ramalingam@accenture.com
+
+Last Updated: February 17, 2026
+
+═══════════════════════════════════════════════════════════════════════

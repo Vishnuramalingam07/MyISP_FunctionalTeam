@@ -1,23 +1,90 @@
 # Environment variables (secrets)
 .env
+.env.local
+.env.*.local
+ADO_SECRETS.env
 
-# Supabase browser credentials (copy from supabase-config.example.js)
-# Attendance/supabase-config.js  # committed intentionally for GitHub Pages
+# Backup files with potential secrets
+*.backup
+*.py.backup
 
 # Virtual environment
 .venv/
 venv/
 env/
+ENV/
 
 # Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.py[cod]
+*$py.class
 
 # Server logs
 *.err
 *.log
+logfile.log
+server.err
+
+# Database files (never commit database data!)
+*.db
+*.sqlite
+*.sqlite3
+data/
+*.conf.backup
+
+# Build and distribution
+build/
+dist/
+*.egg-info/
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Excel temporary files
+~$*.xlsx
+~$*.xls
+*.xlsm.backup
+*.tmp
+
+# Attendance data files (keep local only)
+Attendance/Master_Attendance.xlsx
+Attendance/Master_Attendance_Logs.xlsx
+Attendance/Access.csv
+Attendance/access_log.csv
+
+# Uploads and generated content
+ADO_Testcase_Upload/uploads/
+ADO_Testcase_Upload/summaries/
+Screenshot_Tool/screenshots/
+category_reports/*.xlsx
+
+# Sensitive files
+*.pem
+*.key
+*.cert
+
+# Windows installers
+*.exe
+*.msi
+postgresql-installer.exe
+
+# Test files
+test_*.py
+*_test.py
+test_db_connection.py
 
 # OS
 .DS_Store

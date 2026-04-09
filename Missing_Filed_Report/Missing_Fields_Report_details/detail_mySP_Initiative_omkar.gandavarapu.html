@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mySP Initiative - omkar.gandavarapu</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            min-height: 100vh;
+        }
+        .container { 
+            max-width: 1500px; 
+            margin: 0 auto; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3); 
+        }
+        .header {
+            border-bottom: 4px solid #0078d4;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h1 { 
+            color: #0078d4; 
+            margin-bottom: 8px; 
+            font-size: 32px;
+            font-weight: 700;
+        }
+        .subtitle { 
+            color: #555; 
+            font-size: 18px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .badge {
+            background: #0078d4;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .back-link { 
+            display: inline-block; 
+            margin-bottom: 25px; 
+            color: white;
+            background: #0078d4;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none; 
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .back-link:hover { 
+            background: #005a9e;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,120,212,0.3);
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th { 
+            background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+            color: white; 
+            padding: 16px 12px; 
+            text-align: left; 
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        td { 
+            padding: 14px 12px; 
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+        tr:hover { 
+            background: #C6EFCE;
+            transition: background 0.2s ease;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .url-link { 
+            color: white;
+            background: #0563C1;
+            padding: 6px 14px;
+            border-radius: 4px;
+            text-decoration: none; 
+            font-weight: 600;
+            font-size: 13px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+        .url-link:hover { 
+            background: #004080;
+            transform: scale(1.05);
+        }
+        .record-count { 
+            color: #0078d4; 
+            font-weight: 600; 
+            margin-bottom: 20px;
+            font-size: 16px;
+            background: #e3f2fd;
+            padding: 10px 16px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+        .work-item-id {
+            font-weight: 600;
+            color: #0078d4;
+        }
+        .timestamp {
+            color: #999;
+            font-size: 13px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../Missing_Fields_Report.html" class="back-link">← Back to Summary</a>
+        <div class="header">
+            <h1>mySP Initiative</h1>
+            <div class="subtitle">
+                <span>PT Lead: <strong>omkar.gandavarapu</strong></span>
+                <span class="badge">25 Records</span>
+            </div>
+        </div>
+        <table>
+            <tr>
+                <th>Work Item ID</th>
+                <th>Title</th>
+                <th>State</th>
+                <th>Created By</th>
+                <th style="text-align: center;">Azure DevOps</th>
+                <th>Field Value</th>
+            </tr>
+            <tr>
+                <td class="work-item-id">4329851</td>
+                <td>myISP_BPMS | Pyramid | Pyramid Slendering | Add Slendering Link| Issues with Add Slendering popup.</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4329851" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4331695</td>
+                <td>myISP_BPMS | Pyramid | Add Productivity Popup | Issues with  Add Productivity Popup.</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4331695" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4334356</td>
+                <td>myISP_BPMS | Pyramid | Custom Pyramid & Seat Type Popup | Issues with Custom Pyramid and Add Seat Type popup.</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4334356" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4335253</td>
+                <td>FY26[myISP-BPMS] | Deal data table| Seat Type| Data is displayed incorrectly as per the options selected in the seat type optional drop down| WFO% and Seat Utilization columns are missing</td>
+                <td>Closed</td>
+                <td>Bulusu, Sumanjali Vyaghri</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4335253" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4336085</td>
+                <td>myisp BPMS | Pyramid Card | +Add Seat Type Group Popup  |Issues related to Add Seat Type/Cost .</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4336085" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4338691</td>
+                <td>myISP_BPMS | Productivity Popup & Queue Summary | Issues with +Add new Productivity Popup and Queue Summary.</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4338691" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4342195</td>
+                <td>FY26[myISP-BPMS] | General Solutioning| Unable to delete Add Per FTE cost cards| Seat Cost is displayed as'0' for career level cards</td>
+                <td>Closed</td>
+                <td>Bulusu, Sumanjali Vyaghri</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4342195" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4342365</td>
+                <td>FY26[myISP-BPMS] | Inspire adoption page | For a new deal, on the inspire adoption page, the approver UI is getting displayed without raising any exception</td>
+                <td>Closed</td>
+                <td>Vidadala, Venkata Rakesh</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4342365" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4342394</td>
+                <td>myisp BPMS | General Solutioning_Single FTE and Queue Summary | Seat Type Popup  | Issues related to Seat Type Error messages and Queue Summary.</td>
+                <td>Closed</td>
+                <td>Yadagiri, Lokesh</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4342394" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4342786</td>
+                <td>FY26[myISP-BPMS] | Reports | DVE Report - Revised is not getting downloaded and troughing error</td>
+                <td>Closed</td>
+                <td>Vidadala, Venkata Rakesh</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4342786" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4343066</td>
+                <td>myISP_BPMS | Performance Issue | Issue with loader of the Pyramid and Single fte card.</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4343066" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4343878</td>
+                <td>FY26[myISP-BPMS] | Productivity Dashboard | Scrollbar size in ‘By Service Component’ is smaller than ‘By Service’ in the Productivity dashboard screen</td>
+                <td>Closed</td>
+                <td>Vidadala, Venkata Rakesh</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4343878" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4345544</td>
+                <td>FY26[myISP-BPMS] | General Solutioning| GDC|screen keeps loading post clicking on the ripple for seat type details in Pyramid career level and Productivity Name in pyramid table|Ripple is not working for pyramid level in GDC|</td>
+                <td>Closed</td>
+                <td>Bulusu, Sumanjali Vyaghri</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4345544" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4349117</td>
+                <td>myISP_BPMS | Single FTE/Support Role | Issues related to Seat Type .</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4349117" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4349189</td>
+                <td>FY26[myISP-BPMS] | General Solutioning| GDC|Productivity Name is not getting updated in the GDC screen post updating in the pyramid card for general solutioning for career level split</td>
+                <td>Closed</td>
+                <td>Bulusu, Sumanjali Vyaghri</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4349189" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4349711</td>
+                <td>myISP_BPMS | General Pyramid | Custom Pyramid & Seat Type  | Incorrect row is getting deleted for pyramid popup and Seat Type Group for Support Role/Single FTE</td>
+                <td>Closed</td>
+                <td>Modiyala, Vishnu Vardhan R.</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4349711" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4353012</td>
+                <td>FY26[myISP-BPMS] | Productivity Dashboard | The Export to Excel option on the Productivity dashboard is returning a failure.</td>
+                <td>Closed</td>
+                <td>Vidadala, Venkata Rakesh</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4353012" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4353147</td>
+                <td>myISP_BPMS | Costing Resources & Costing Admin  | Master data(Read-only) | Issue with Seat Type filter and custom seat type group.</td>
+                <td>Closed</td>
+                <td>Yadagiri, Lokesh</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4353147" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4353211</td>
+                <td>myISP_BPMS | General Pyramid | Direct seat types are not restored when reopening the card.</td>
+                <td>Closed</td>
+                <td>Vellingiri, Rubha Shri</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4353211" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4353796</td>
+                <td>myISP_BPMS | Support Role | Calculate cost is showing in valid rates /load even why no invalid rates are present.</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4353796" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4354351</td>
+                <td>myISP BPMS | GS uploaded cards and TDS  | Issues with Seat Type Group  and Productivity.</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4354351" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4355991</td>
+                <td>MyISP_BPMS | General Solutioning | Seat Type | Custom Seat type is not flowing in the General Solutioning Pyramid card</td>
+                <td>Closed</td>
+                <td>Modiyala, Vishnu Vardhan R.</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4355991" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4358774</td>
+                <td>myISP_BPMS | Solution Model | Getting invalid range field name at the end of Get Meta | Issue with Direct Seat Types.</td>
+                <td>Closed</td>
+                <td>Jain, Aayushi</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4358774" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4367080</td>
+                <td>FY26[myISP-BPMS] | Intelligent PTP | Customer care| Pre-Go live Seat Cost is not matching post performing MRDB and multiple issues with deviation from standard , DMI and Bulk GS Template upload</td>
+                <td>Closed</td>
+                <td>Modiyala, Vishnu Vardhan R.</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4367080" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+            <tr>
+                <td class="work-item-id">4372856</td>
+                <td>FY26[myISP-BPMS] | Intelligent Customer care| Pre-Go live Seat Cost is not matching post performing MRDB</td>
+                <td>Closed</td>
+                <td>Modiyala, Vishnu Vardhan R.</td>
+                <td style="text-align: center;"><a href="https://dev.azure.com/accenturecio08/AutomationProcess_29697/_workitems/edit/4372856" target="_blank" class="url-link">Open</a></td>
+                <td>—</td>
+            </tr>
+        </table>
+        <div class="timestamp">Generated on March 25, 2026 at 09:56 PM</div>
+        <br>
+        <a href="../Missing_Fields_Report.html" class="back-link">← Back to Summary</a>
+    </div>
+</body>
+</html>

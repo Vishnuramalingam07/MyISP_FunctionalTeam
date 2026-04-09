@@ -1,0 +1,172 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║        MyISP INTERNAL TOOLS - NETWORK ACCESS SETUP GUIDE             ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+🌐 TEAM ACCESS URL: http://192.168.1.2:8080
+
+═══════════════════════════════════════════════════════════════════════
+
+✅ STEP 1: ENABLE FIREWALL ACCESS (REQUIRED!)
+───────────────────────────────────────────────────────────────────────
+
+The web server is running, but Windows Firewall is blocking incoming 
+connections. You MUST complete this step to allow team access:
+
+📌 EASIEST METHOD - Double-click this file:
+   👉 Enable-NetworkAccess.bat
+   
+   - Click "Yes" when Windows asks for Administrator permission
+   - Wait for "FIREWALL CONFIGURED SUCCESSFULLY!" message
+   - Press any key to close the window
+
+📌 ALTERNATIVE METHOD - Manual Firewall Configuration:
+   1. Press Windows Key + R
+   2. Type: wf.msc and press Enter
+   3. Click "Inbound Rules" in left panel
+   4. Click "New Rule" in right panel
+   5. Select "Port" → Click Next
+   6. Select "TCP" and enter port: 8080 → Click Next
+   7. Select "Allow the connection" → Click Next
+   8. Check all boxes (Domain, Private, Public) → Click Next
+   9. Name: MyISP Internal Tools Server → Click Finish
+
+═══════════════════════════════════════════════════════════════════════
+
+✅ STEP 2: VERIFY SERVER IS RUNNING
+───────────────────────────────────────────────────────────────────────
+
+The Python web server must be running. Check for a terminal window 
+with Python running.
+
+If server is NOT running, open PowerShell in this folder and run:
+   python -m http.server 8080 --bind 0.0.0.0
+
+Keep that window open while the website is in use.
+
+═══════════════════════════════════════════════════════════════════════
+
+✅ STEP 3: TEST FROM ANOTHER COMPUTER
+───────────────────────────────────────────────────────────────────────
+
+1. Open a web browser on another computer (same network)
+2. Enter: http://192.168.1.2:8080
+3. You should see the MyISP Internal Tools homepage
+
+═══════════════════════════════════════════════════════════════════════
+
+🔧 TROUBLESHOOTING
+───────────────────────────────────────────────────────────────────────
+
+❌ PROBLEM: "This site can't be reached" or "Connection refused"
+
+SOLUTION 1 - Check Firewall:
+   Run in PowerShell (as Administrator):
+   netsh advfirewall firewall show rule name="MyISP Internal Tools Server"
+   
+   If "No rules match", the firewall rule wasn't created. Retry Step 1.
+
+SOLUTION 2 - Verify Server is Running:
+   Run in PowerShell:
+   netstat -an | findstr :8080
+   
+   Should show: "TCP    0.0.0.0:8080    LISTENING"
+   If not, restart the server (see Step 2)
+
+SOLUTION 3 - Check IP Address:
+   Your IP might have changed. Check current IP:
+   ipconfig | findstr IPv4
+   
+   Update the URL with the new IP address.
+
+SOLUTION 4 - Test from Same Computer First:
+   On this computer, open: http://192.168.1.2:8080
+   If it works here but not on other computers, it's a firewall issue.
+   If it doesn't work here either, restart the server.
+
+───────────────────────────────────────────────────────────────────────
+
+❌ PROBLEM: Firewall rule won't add (Access Denied)
+
+SOLUTION:
+   1. Right-click on PowerShell icon
+   2. Select "Run as Administrator"
+   3. Navigate to folder: cd C:\Users\vishnu.ramalingam\MyISP_Tools
+   4. Run: .\Enable-NetworkAccess.bat
+
+───────────────────────────────────────────────────────────────────────
+
+❌ PROBLEM: Python not found
+
+SOLUTION - Use Alternative Web Server:
+   
+   Option A - Node.js (if installed):
+      npx http-server -p 8080 -a 0.0.0.0
+   
+   Option B - PHP (if installed):
+      php -S 0.0.0.0:8080
+   
+   Option C - IIS (Windows Server):
+      1. Install IIS through Windows Features
+      2. Copy files to C:\inetpub\wwwroot\MyISP_Tools
+      3. Access via http://servername/MyISP_Tools
+
+═══════════════════════════════════════════════════════════════════════
+
+📋 NETWORK REQUIREMENTS
+───────────────────────────────────────────────────────────────────────
+
+✓ Team members must be on the SAME LOCAL NETWORK
+✓ Server computer must remain on and connected to network
+✓ Firewall must allow port 8080 inbound traffic
+✓ Web server process must be running
+✓ No VPN or network isolation should block traffic
+
+═══════════════════════════════════════════════════════════════════════
+
+🎯 QUICK TEST CHECKLIST
+───────────────────────────────────────────────────────────────────────
+
+□ Firewall rule added (Enable-NetworkAccess.bat completed successfully)
+□ Server is running (terminal window with Python is open)
+□ Can access http://192.168.1.2:8080 from this computer
+□ Tested from another computer on same network
+□ Website loads and all 5 report tools are visible
+
+═══════════════════════════════════════════════════════════════════════
+
+📧 SHARE WITH YOUR TEAM
+───────────────────────────────────────────────────────────────────────
+
+"Hi Team,
+
+Our internal tools website is now available at:
+http://192.168.1.2:8080
+
+You can access the following reports:
+• Daily Report
+• Regression Report
+• Missing Field Report
+• Attendance Report
+• Defect Status Report
+
+Make sure you're connected to our office network.
+
+Thanks!"
+
+═══════════════════════════════════════════════════════════════════════
+
+📞 SUPPORT
+───────────────────────────────────────────────────────────────────────
+
+If issues persist after following all steps:
+1. Check server logs in the PowerShell window
+2. Verify network connectivity between computers
+3. Consult your IT administrator for network/firewall policies
+4. Consider deploying to a dedicated web server
+
+═══════════════════════════════════════════════════════════════════════
+Server IP: 192.168.1.2
+Port: 8080
+Location: C:\Users\vishnu.ramalingam\MyISP_Tools
+Last Updated: February 17, 2026
+═══════════════════════════════════════════════════════════════════════

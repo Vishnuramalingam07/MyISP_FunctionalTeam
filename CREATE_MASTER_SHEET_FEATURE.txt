@@ -1,0 +1,181 @@
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    CREATE MASTER SHEET FEATURE - OVERVIEW                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📅 Created: March 6, 2026
+✅ Status: Complete and Ready to Use
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                              WHAT'S NEW                                      ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+A new "Create Master Sheet" button has been added to the attendance tracker that
+allows you to pre-populate a master sheet with ALL team members for any month.
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                              HOW IT WORKS                                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+1. BUTTON LOCATION
+   • The "📄 Create Master Sheet" button appears in the action buttons row
+   • Located between "Save to Master Excel" and "Download Excel" buttons
+   • Button has a green gradient background for visibility
+
+2. FUNCTIONALITY
+   When clicked, the button will:
+   
+   ✓ Check if a sheet for the selected month/year already exists
+   ✓ If sheet DOES NOT exist:
+     - Creates a new sheet with January format (standardized)
+     - Adds ALL team members from Team Details.xlsx
+     - Includes Lead Name for each team member
+     - Includes Location for each team member
+     - Pre-formats the sheet with proper column widths
+     - Adds date headers and day names
+   
+   ✓ If sheet ALREADY exists:
+     - Shows a message: "Sheet already exists"
+     - Displays current team member count
+     - Suggests using "Refresh Data" to load the existing sheet
+
+3. WHAT GETS POPULATED
+   • Column A: Team Member Names (all 175+ members from Team Details)
+   • Column B: Lead Name (mapped from Team Details)
+   • Column C: Location (mapped from Team Details)
+   • Columns D onward: Date columns (1-31 based on month)
+   • Summary columns: Total Present, Total Leaves, UnPlanned, SickLeave
+
+4. SHEET FORMAT
+   • Row 1: Team Member Names | Lead Name
+   • Row 2: Metadata | 📍 Location | 1 | 2 | 3 | ... | 31 | Summary columns
+   • Row 3: Timestamp | Day names (Mon, Tue, Wed...)
+   • Row 4+: Team member data rows (sorted by Lead, then by Name)
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                           HOW TO USE                                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+STEP 1: Open the Attendance Tracker
+   • Navigate to: http://localhost:8000/Attendance/team-attendance-tracker-sharepoint.html
+   • Or open from the Flask server URL
+
+STEP 2: Select Month and Year
+   • Use the month/year dropdowns to select the target month
+   • Example: March 2026
+
+STEP 3: Click "Create Master Sheet"
+   • The button will show a confirmation dialog
+   • Click OK to proceed
+
+STEP 4: Wait for Confirmation
+   • If sheet doesn't exist: Success message with member/lead counts
+   • If sheet exists: Info message with existing sheet details
+
+STEP 5: Load the Data (if new sheet created)
+   • Select a lead from the dropdown
+   • Click "Refresh Data" to load the newly created sheet
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          TECHNICAL DETAILS                                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+FILES MODIFIED:
+1. team-attendance-tracker-sharepoint.html
+   • Added "Create Master Sheet" button (line ~850)
+   • Added createMasterSheet() JavaScript function (line ~3188)
+   • Added getMasterSheetCreationApiUrl() helper function (line ~3075)
+
+2. app.py
+   • Added /api/attendance/create-master-sheet endpoint (line ~949)
+   • Endpoint checks for existing sheet
+   • Creates sheet with all members from Team Details.xlsx
+   • Returns success/error status with details
+
+DATA SOURCE:
+• Team Details.xlsx (Attendance folder)
+  - Contains all team members
+  - Maps members to leads
+  - Includes location data
+
+API ENDPOINT:
+• URL: /api/attendance/create-master-sheet
+• Method: POST
+• Payload: { year: 2026, month: 3 }
+• Response: { success, already_exists, sheet_name, member_count, lead_count }
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          IMPORTANT NOTES                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+⚠️  REQUIREMENTS:
+   • Flask server must be running (python app.py)
+   • Team Details.xlsx must exist in Attendance folder
+   • Pandas library must be installed (pip install pandas)
+
+⚠️  BEHAVIOR:
+   • Button only works when month/year are selected
+   • Creates sheet with CURRENT format (matches January 2026)
+   • All team members are sorted by Lead, then by Name
+   • Empty attendance cells (no status assigned yet)
+
+⚠️  USE CASES:
+   ✓ Start of new month: Pre-create sheet for entire team
+   ✓ Bulk setup: Create sheets for multiple months at once
+   ✓ Data initialization: Ensure all members are included
+   ✗ NOT for editing existing sheets (use "Save to Master Excel" instead)
+   ✗ NOT for partial team updates (use normal save workflow instead)
+
+╔════════════════════════════════════════════════════════════════���═════════════╗
+║                          TROUBLESHOOTING                                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+ISSUE: Button doesn't work
+   → Make sure Flask server is running
+   → Check browser console for errors (F12)
+   → Verify you're accessing via server URL not file://
+
+ISSUE: "Team Details.xlsx not found"
+   → Ensure Team Details.xlsx exists in Attendance folder
+   → Check file permissions
+
+ISSUE: Sheet created but no data
+   → Check Team Details.xlsx has valid data
+   → Verify columns: Team members, Lead, Location
+
+ISSUE: Leads not showing correctly
+   → Verify Team Details.xlsx mapping is up to date
+   → Run extract_team_data.py to refresh data
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          TESTING CHECKLIST                                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+☐ 1. Open attendance tracker in browser
+☐ 2. Select a month that doesn't have a sheet yet (e.g., April 2026)
+☐ 3. Click "Create Master Sheet" button
+☐ 4. Confirm the action in the popup
+☐ 5. Verify success message shows correct counts
+☐ 6. Open Master_Attendance.xlsx and check the new sheet
+☐ 7. Verify all team members are present
+☐ 8. Verify lead names are populated correctly
+☐ 9. Try clicking again - should show "Sheet already exists"
+☐ 10. Use "Refresh Data" to load the sheet in the tracker
+
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                              SUMMARY                                         ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+✅ New button added to HTML tracker
+✅ JavaScript function created to handle button clicks
+✅ API endpoint created in Flask backend
+✅ Reads all team members from Team Details.xlsx
+✅ Creates sheets with standardized January 2026 format
+✅ Checks for existing sheets before creating
+✅ Returns detailed success/error messages
+✅ Integration with existing refresh/save workflow
+✅ All team members and leads included automatically
+
+The feature is now ready to use! Simply restart the Flask server (if not already
+running) and navigate to the attendance tracker to test the new button.
+
+═══════════════════════════════════════════════════════════════════════════════

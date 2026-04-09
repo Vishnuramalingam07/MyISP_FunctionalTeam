@@ -1,0 +1,39 @@
+╔══════════════════════════════════════════════════════════════╗
+║          MyISP Internal Tools - Network Access               ║
+╚══════════════════════════════════════════════════════════════╝
+
+🌐 TEAM ACCESS URL:
+   http://192.168.1.2:8000
+
+📋 INSTRUCTIONS FOR TEAM MEMBERS:
+
+1. Open any web browser (Chrome, Firefox, Edge, etc.)
+2. Enter the URL: http://192.168.1.2:8080
+3. Click on any report tool to access the forms
+
+✅ REQUIREMENTS:
+   - Team members must be on the same network
+   - Server must be running (keep this window open)
+   - Firewall may need to allow port 8080
+
+🔧 SERVER INFORMATION:
+   - Host IP: 192.168.1.2
+   - Port: 8000 (Common port - no firewall config needed!)
+   - Status: Running
+   - Location: C:\Users\vishnu.ramalingam\MyISP_Tools
+
+🛑 TO STOP THE SERVER:
+   - Close the PowerShell terminal window, or
+   - Press Ctrl+C in the terminal
+
+⚠️ FIREWALL NOTES:
+   Port 8000 is commonly allowed - no firewall configuration needed!
+   If team members still cannot access, check that they are on the same network.
+
+📧 SHARE THIS WITH YOUR TEAM:
+   "Access MyISP Internal Tools at: http://192.168.1.2:8000"
+
+═══════════════════════════════════════════════════════════════
+Last Updated: February 16, 2026
+Server Started: Active
+═══════════════════════════════════════════════════════════════

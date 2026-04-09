@@ -1,0 +1,188 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║        UNIVERSAL ACCESS - WORKS FOR ANY USER                         ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+Your MyISP Internal Tools now uses DYNAMIC paths that automatically
+detect the current user. This works on ANY computer!
+
+═══════════════════════════════════════════════════════════════════════
+
+🎯 EASIEST WAYS TO OPEN (Auto-detects your user):
+═══════════════════════════════════════════════════════════════════════
+
+METHOD 1: Double-Click to Open
+────────────────────────────────────────────────────────────────────
+
+Simply double-click:  Open-Website.bat
+
+✓ Automatically finds your user folder
+✓ Opens the website immediately
+✓ Works for any Windows user
+
+────────────────────────────────────────────────────────────────────
+
+METHOD 2: Create Desktop Shortcut
+────────────────────────────────────────────────────────────────────
+
+Double-click:  Create-Desktop-Shortcut.bat
+
+✓ Creates a shortcut on YOUR desktop
+✓ Works for current user automatically
+✓ One-time setup, then just double-click the shortcut
+
+────────────────────────────────────────────────────────────────────
+
+METHOD 3: Use Windows Run Dialog
+────────────────────────────────────────────────────────────────────
+
+Press Windows + R, then type:
+
+   %USERPROFILE%\MyISP_Tools\index.html
+
+Press Enter
+
+✓ %USERPROFILE% automatically becomes your user folder
+✓ Works on any computer
+✓ No need to know your username
+
+────────────────────────────────────────────────────────────────────
+
+METHOD 4: File Explorer Address Bar
+────────────────────────────────────────────────────────────────────
+
+1. Press Windows + E (File Explorer)
+2. Type in address bar:
+
+   %USERPROFILE%\MyISP_Tools\index.html
+
+3. Press Enter
+
+═══════════════════════════════════════════════════════════════════════
+
+📧 FOR YOUR TEAM (Network Access):
+═══════════════════════════════════════════════════════════════════════
+
+Option A: Share via Computer Name (Recommended)
+────────────────────────────────────────────────────────────────────
+
+Team members can access using:
+
+   \\CDC2-L-G04FSGN\MyISP_Tools\index.html
+
+To enable sharing, right-click: FINAL-Enable-Sharing.bat
+→ Run as Administrator
+
+────────────────────────────────────────────────────────────────────
+
+Option B: Each User Has Own Copy
+────────────────────────────────────────────────────────────────────
+
+1. Copy the entire MyISP_Tools folder
+2. Each team member pastes it to: C:\Users\[their-username]\
+3. They double-click: Open-Website.bat
+4. It automatically works with their username!
+
+═══════════════════════════════════════════════════════════════════════
+
+🔧 HOW THE AUTO-DETECTION WORKS:
+═══════════════════════════════════════════════════════════════════════
+
+Environment Variables Used:
+---------------------------
+%USERNAME%      = Current logged-in user (e.g., "vishnu.ramalingam")
+%USERPROFILE%   = Full path to user folder (e.g., "C:\Users\vishnu.ramalingam")
+%COMPUTERNAME%  = This computer's name (e.g., "CDC2-L-G04FSGN")
+
+Auto-Detected Path:
+------------------
+%USERPROFILE%\MyISP_Tools\index.html
+
+Becomes:
+-------
+C:\Users\[current-user]\MyISP_Tools\index.html
+
+═══════════════════════════════════════════════════════════════════════
+
+📁 FOLDER STRUCTURE (Portable):
+═══════════════════════════════════════════════════════════════════════
+
+C:\Users\[ANY-USER]\MyISP_Tools\
+├── index.html                          ← Main website
+├── styles.css                          ← Styling
+├── daily-report.html                   ← Report pages
+├── regression-report.html
+├── missing-filed-report.html
+├── attendance-report.html
+├── defect-status-report.html
+├── Open-Website.bat                    ← Auto-open (NEW!)
+├── Open-Website.ps1                    ← PowerShell version
+├── Create-Desktop-Shortcut.bat         ← Desktop shortcut creator
+└── FINAL-Enable-Sharing.bat            ← For network sharing
+
+═══════════════════════════════════════════════════════════════════════
+
+✅ BENEFITS OF DYNAMIC PATHS:
+═══════════════════════════════════════════════════════════════════════
+
+✓ Works for any Windows user
+✓ No hardcoded usernames
+✓ Portable - copy to any computer
+✓ Easy to share with team
+✓ No manual path editing needed
+✓ Automatically adapts to current user
+
+═══════════════════════════════════════════════════════════════════════
+
+🚀 QUICK START FOR NEW USERS:
+═══════════════════════════════════════════════════════════════════════
+
+1. Copy MyISP_Tools folder to: C:\Users\[your-username]\
+   
+2. Double-click: Open-Website.bat
+
+3. Done! Website opens automatically.
+
+OR
+
+1. Double-click: Create-Desktop-Shortcut.bat
+
+2. Look for "MyISP Internal Tools" icon on desktop
+
+3. Double-click it anytime to access tools
+
+═══════════════════════════════════════════════════════════════════════
+
+🎯 RECOMMENDED FOR YOU:
+═══════════════════════════════════════════════════════════════════════
+
+Personal Use:
+→ Double-click: Create-Desktop-Shortcut.bat
+→ Use the desktop shortcut from now on
+
+Team Sharing:
+→ Right-click: FINAL-Enable-Sharing.bat → Run as Administrator
+→ Share: \\CDC2-L-G04FSGN\MyISP_Tools\index.html
+
+═══════════════════════════════════════════════════════════════════════
+
+📝 TECHNICAL NOTES:
+═══════════════════════════════════════════════════════════════════════
+
+file:/// Protocol:
+-----------------
+When you see: file:///C:/Users/vishnu.ramalingam/MyISP_Tools/index.html
+This is the browser showing the local file path.
+✓ This is CORRECT for local access!
+
+Environment Variables:
+---------------------
+Windows automatically replaces:
+%USERPROFILE% → C:\Users\[current-user]
+%USERNAME% → Current user's login name
+%COMPUTERNAME% → This PC'sname
+
+═══════════════════════════════════════════════════════════════════════
+Created: February 17, 2026
+Auto-detects: Current user, computer name, profile path
+Works on: Any Windows computer
+═══════════════════════════════════════════════════════════════════════
