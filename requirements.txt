@@ -9,3 +9,5 @@ flask-httpauth==4.8.0
 python-docx
 python-dotenv>=1.0.0
 psycopg2-binary>=2.9.0
+selenium==4.15.2
+webdriver-manager==4.0.1
