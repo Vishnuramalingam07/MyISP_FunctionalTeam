@@ -5,7 +5,7 @@ openpyxl==3.1.2
 xlsxwriter==3.1.9
 waitress==3.0.0
 flask-httpauth==4.8.0
-pywin32==306
+# pywin32==306  # Windows-only, commented out for Linux deployment
 python-docx
 python-dotenv>=1.0.0
 psycopg2-binary>=2.9.0
