@@ -25,7 +25,7 @@
  * 3. Azure deployment: 'https://myisp-tools.azurewebsites.net'
  * 4. Custom server: 'http://your-server-ip:5000'
  */
-const API_BASE_URL = ''; // ← Change this to your deployed backend URL
+const API_BASE_URL = 'https://myisp-functionalteam.onrender.com'; // Production backend on Render.com
 
 // ============================================================================
 // HELPER FUNCTION
