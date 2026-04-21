@@ -63,12 +63,32 @@ def find_local_msedgedriver() -> str | None:
         r"C:\Program Files (x86)\Microsoft\Edge\Application",
         r"C:\Program Files\Microsoft\Edge\Application",
         os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge\Application"),
+        os.path.expandvars(r"%PROGRAMFILES%\Microsoft\Edge\Application"),
+        os.path.expandvars(r"%PROGRAMFILES(X86)%\Microsoft\Edge\Application"),
     ]
+    
+    print("Searching for msedgedriver.exe in:")
     for root in search_roots:
+        print(f"  - {root}")
         if not os.path.isdir(root):
+            print(f"    (directory not found)")
             continue
-        for candidate in Path(root).rglob("msedgedriver.exe"):
-            return str(candidate)
+        
+        # Try direct path first (faster)
+        direct_path = os.path.join(root, "msedgedriver.exe")
+        if os.path.exists(direct_path):
+            print(f"    ✓ Found: {direct_path}")
+            return direct_path
+        
+        # Search recursively in version subdirectories
+        try:
+            for candidate in Path(root).rglob("msedgedriver.exe"):
+                print(f"    ✓ Found: {candidate}")
+                return str(candidate)
+        except Exception as e:
+            print(f"    Error searching: {e}")
+    
+    print("  ✗ msedgedriver.exe not found in any location")
     return None
 
 
@@ -141,11 +161,26 @@ def build_edge_driver() -> webdriver.Edge:
 
     driver_path = find_local_msedgedriver()
     if driver_path:
-        print(f"Using local msedgedriver: {driver_path}")
+        print(f"✓ Using local msedgedriver: {driver_path}")
         service = Service(driver_path, log_output=os.devnull)  # Suppress driver logs
     else:
-        print("Local msedgedriver not found – using Selenium built-in manager ...")
-        service = Service(log_output=os.devnull)
+        print("\n" + "="*80)
+        print("ERROR: msedgedriver.exe not found!")
+        print("="*80)
+        print("\nCannot download SharePoint files without Edge driver.")
+        print("\nSolution 1: Update Edge browser (includes driver)")
+        print("  1. Open Edge: edge://settings/help")
+        print("  2. Let it update to latest version")
+        print("  3. Restart Edge")
+        print("  4. Run this script again")
+        print("\nSolution 2: Download driver manually")
+        print("  1. Go to: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/")
+        print("  2. Download matching your Edge version")
+        print("  3. Extract to: C:\\Program Files\\Microsoft\\Edge\\Application\\")
+        print("\nSolution 3: Use existing Excel files")
+        print("  If files already exist, the main script will use them.")
+        print("="*80 + "\n")
+        raise RuntimeError("msedgedriver.exe not found. Cannot proceed with SharePoint download.")
     
     try:
         driver = webdriver.Edge(service=service, options=options)
