@@ -646,7 +646,11 @@ def _find_main_release_dashboard_file():
     """Resolve the generated dashboard HTML path using the same logic as config.py."""
     project_root = Path(__file__).resolve().parent
     candidates = [
+        # Priority 1: Script directory (works in Docker) - MATCHES config.py
+        project_root / "Main_Release_Daily_Status_Report" / "Daily_Status_Dashboard.html",
+        # Priority 2: GHC files in project root
         project_root / "GHC files" / "Daily status report - Integrated" / "Daily_Status_Dashboard.html",
+        # Priority 3: User home directory
         Path.home() / "GHC files" / "Daily status report - Integrated" / "Daily_Status_Dashboard.html",
     ]
     for p in candidates:
