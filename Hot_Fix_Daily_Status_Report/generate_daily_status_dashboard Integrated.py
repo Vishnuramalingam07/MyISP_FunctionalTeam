@@ -41,19 +41,37 @@ print()
 # Download PT Status file from SharePoint
 print("Step 1: Downloading PT Status file from SharePoint...")
 print("-" * 80)
-result_pt = subprocess.run([python_exe, download_pt_script], capture_output=False)
-if result_pt.returncode != 0:
-    print("Error downloading PT Status file")
-    sys.exit(1)
+pt_exists_before = os.path.exists(PT_STATUS_FILE)
+if pt_exists_before:
+    print(f"ℹ️  PT Status file already exists: {PT_STATUS_FILE}")
+    print("   Skipping download (using existing file)")
+else:
+    result_pt = subprocess.run([python_exe, download_pt_script], capture_output=True, text=True)
+    if result_pt.returncode != 0:
+        print(f"⚠️  Download failed: {result_pt.stderr}")
+        if not os.path.exists(PT_STATUS_FILE):
+            print("❌ PT Status file not found. Please download manually or run on local machine.")
+            sys.exit(1)
+        else:
+            print("✓ File exists from previous run, continuing...")
 print()
 
 # Download UAT Status file from SharePoint
 print("Step 2: Downloading UAT Status file from SharePoint...")
 print("-" * 80)
-result_uat = subprocess.run([python_exe, download_uat_script], capture_output=False)
-if result_uat.returncode != 0:
-    print("Error downloading UAT Status file")
-    sys.exit(1)
+uat_exists_before = os.path.exists(UAT_DETAILED_REPORT_FILE)
+if uat_exists_before:
+    print(f"ℹ️  UAT Status file already exists: {UAT_DETAILED_REPORT_FILE}")
+    print("   Skipping download (using existing file)")
+else:
+    result_uat = subprocess.run([python_exe, download_uat_script], capture_output=True, text=True)
+    if result_uat.returncode != 0:
+        print(f"⚠️  Download failed: {result_uat.stderr}")
+        if not os.path.exists(UAT_DETAILED_REPORT_FILE):
+            print("❌ UAT Status file not found. Please download manually or run on local machine.")
+            sys.exit(1)
+        else:
+            print("✓ File exists from previous run, continuing...")
 print()
 
 # Run generate_product_owner_details Integrated.py (prerequisite)
