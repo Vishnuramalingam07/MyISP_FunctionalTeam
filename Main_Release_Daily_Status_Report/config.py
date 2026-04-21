@@ -21,6 +21,8 @@ from pathlib import Path
 _USER_HOME = Path.home()
 # Project root = two levels up from this config.py (i.e. MyISP_Tools/)
 _PROJECT_ROOT = Path(__file__).resolve().parent.parent
+# Script directory (Main_Release_Daily_Status_Report)
+_SCRIPT_DIR = Path(__file__).resolve().parent
 
 def _find_first_existing(*candidates):
     """Return the first path that exists, or the last candidate as default."""
@@ -30,7 +32,9 @@ def _find_first_existing(*candidates):
     return str(candidates[-1])
 
 # Base output directory - searches candidate locations in order
+# Priority: 1. Script dir (works in Docker), 2. GHC files in project, 3. GHC files in user home
 OUTPUT_DIR = _find_first_existing(
+    _SCRIPT_DIR,  # Primary: Use script directory itself (works in Docker)
     _PROJECT_ROOT / "GHC files" / "Daily status report - Integrated",
     _USER_HOME / "GHC files" / "Daily status report - Integrated",
 )
