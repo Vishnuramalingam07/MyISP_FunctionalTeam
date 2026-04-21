@@ -39,8 +39,10 @@ rate_limit_delay = 0
 # ADO Query ID (configured via Settings in the web app)
 query_id = "6badbdf6-4b17-4053-a23b-383c21ab4d39"  # ADO Query ID
 
-# Mapping file path
-mapping_path = r"C:\Users\vishnu.ramalingam\MyISP_Tools\Common_Files\M POC Mapping.csv"
+# Mapping file path (works in both Windows and Docker)
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(script_dir)
+mapping_path = os.path.join(project_root, "Common_Files", "M POC Mapping.csv")
 
 # Read mapping file
 print(f"Reading mapping file: {mapping_path}")
