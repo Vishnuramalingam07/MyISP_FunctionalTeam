@@ -357,8 +357,7 @@ def process_and_update_work_items(query_id):
     # Save results to CSV
     results_df = pd.DataFrame(results)
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    output_dir = r"C:\Users\vishnu.ramalingam\MyISP_Tools\M_POC"
-    output_file = f"{output_dir}\ADO_Update_Results_{timestamp}.csv"
+    output_file = os.path.join(script_dir, f"ADO_Update_Results_{timestamp}.csv")
     results_df.to_csv(output_file, index=False)
     print(f"\n💾 Results saved to: {output_file}")
     

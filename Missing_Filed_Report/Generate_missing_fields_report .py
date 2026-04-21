@@ -11,8 +11,10 @@ ORG = "accenturecio08"
 PROJECT = "AutomationProcess_29697"
 QUERY_ID = "0ed0091f-b665-4f51-b553-4c5afdea5e92"
 
-OUTPUT_PATH = r"C:\Users\vishnu.ramalingam\MyISP_Tools\Missing_Filed_Report\Missing_Fields_Report.xlsx"
-PT_LEAD_MAPPING_PATH = r"C:\Users\vishnu.ramalingam\MyISP_Tools\Missing_Filed_Report\PT Lead.xlsx"
+# Use relative paths that work in both Windows and Docker
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_PATH = os.path.join(SCRIPT_DIR, "Missing_Fields_Report.xlsx")
+PT_LEAD_MAPPING_PATH = os.path.join(SCRIPT_DIR, "PT Lead.xlsx")
     
 FIELDS_DISPLAY = [
     "Defect Record",

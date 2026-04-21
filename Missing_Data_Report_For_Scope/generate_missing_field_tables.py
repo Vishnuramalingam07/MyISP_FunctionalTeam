@@ -343,10 +343,11 @@ MISSING_FIELD_NAMES = [
 CLOSED_MISSING_FIELD_NAMES = MISSING_FIELD_NAMES.copy()
 
 
-
-OUTPUT_PATH = r"C:\Users\vishnu.ramalingam\MyISP_Tools\Missing_Data_Report_For_Scope"
-PT_LEAD_MAPPING_PATH = r"C:\Users\vishnu.ramalingam\MyISP_Tools\Missing_Data_Report_For_Scope\BA_Team_Names 1.xlsx"
-HTML_OUTPUT_DIR = os.path.join(os.path.dirname(OUTPUT_PATH), "category_reports")
+# Use relative paths that work in both Windows and Docker
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_PATH = SCRIPT_DIR
+PT_LEAD_MAPPING_PATH = os.path.join(SCRIPT_DIR, "BA_Team_Names 1.xlsx")
+HTML_OUTPUT_DIR = os.path.join(SCRIPT_DIR, "category_reports")
 
 
 def get_ssl_verify_setting() -> bool | str:
