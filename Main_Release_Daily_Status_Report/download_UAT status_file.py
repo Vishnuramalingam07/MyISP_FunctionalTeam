@@ -38,7 +38,7 @@ from config import OUTPUT_DIR
 SITE_URL = "https://ts.accenture.com/sites/mySPTesting"
 
 # Server-relative path to the folder containing the release Excel file
-FILE_FOLDER_RELATIVE_URL = "/sites/mySPTesting/Shared Documents/General/01 - Deliverables/Releases - FY 2025-2026/April/April18th"
+FILE_FOLDER_RELATIVE_URL = "/sites/mySPTesting/Shared Documents/General/01 - Deliverables/Releases - FY 2025-2026/May"
 FILE_NAME_BASE = "UAT Release Detailed Report"
 EXCEL_EXTENSIONS = [".xlsx", ".xlsm", ".xls", ".xlsb"]
 

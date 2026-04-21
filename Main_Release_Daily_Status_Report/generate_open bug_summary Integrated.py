@@ -9,7 +9,7 @@ from config import OUTPUT_DIR, POD_MAPPING_PATH, OPEN_BUG_SUMMARY_FILE
 # Azure DevOps configuration
 org = "accenturecio08"
 project = "AutomationProcess_29697"
-query_id = "82f9cead-6354-49bc-ba99-b5aaf885c525"
+query_id = "86badbdf6-4b17-4053-a23b-383c21ab4d39"
 api_url = f"https://dev.azure.com/{org}/{project}/_apis/wit/wiql/{query_id}?api-version=7.0"
 
 # Get PAT from environment variable
