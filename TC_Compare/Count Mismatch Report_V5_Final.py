@@ -25,8 +25,8 @@ load_dotenv('ADO_SECRETS.env')
 ADO_CONFIG = {
     'organization': 'accenturecio08',
     'project': 'AutomationProcess_29697',
-    'plan_id': '4387418',
-    'suite_id': '4387420',  # PT Execution suite ID
+    'plan_id': '4443950',
+    'suite_id': '4443958',  # PT Execution suite ID
     'target_suite_name': 'PT Execution', 
     'pat_token': os.getenv('ADO_PAT_MAIN', ''),
     'max_workers': 20,  # Parallel API calls
@@ -35,11 +35,14 @@ ADO_CONFIG = {
 if not ADO_CONFIG['pat_token']:
     raise ValueError("ADO_PAT_MAIN not found in ADO_SECRETS.env file")
 
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 # Full path to the SharePoint Excel file (downloaded by download_sharepoint_file.py)
-XLSX_FILE = r"C:\Users\vishnu.ramalingam\MyISP_Tools\TC_Compare\Mar 28th_Release.xlsx"
+XLSX_FILE = os.path.join(SCRIPT_DIR, "PT Status excel.xlsx")
 
 # Directory where all output reports and files are saved
-OUTPUT_DIR = r"C:\Users\vishnu.ramalingam\MyISP_Tools\TC_Compare"
+OUTPUT_DIR = SCRIPT_DIR
 
 # Skip SharePoint download if the Excel file is newer than this many hours
 XLSX_MAX_AGE_HOURS = 6
@@ -2668,8 +2671,8 @@ def main():
 
     if _should_download:
         try:
-            _sp_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "download_sharepoint_file.py")
-            _spec = importlib.util.spec_from_file_location("download_sharepoint_file", _sp_script)
+            _sp_script = os.path.join(os.path.dirname(os.path.abspath(__file__)), "download_PT status_file.py")
+            _spec = importlib.util.spec_from_file_location("download_PT_status_file", _sp_script)
             _sp_module = importlib.util.module_from_spec(_spec)
             _spec.loader.exec_module(_sp_module)
             _sp_module.main()
@@ -2815,8 +2818,8 @@ def main():
     print(f"   ✅ Tracked {sum(len(suites) for suites in suite_names_planned_ado.values())} unique suites for Planned Automation from ADO")
     print(f"   ✅ Tracked {sum(len(wids) for wids in work_item_ids_planned_ado.values())} unique US IDs (work items) for Planned Automation from ADO")
     
-    # Load SharePoint Insprint=Yes data
-    print(f"\n📥 Loading SharePoint Insprint='Yes' data...")
+    # Load SharePoint Insprint=Yes/Partial data
+    print(f"\n📥 Loading SharePoint Insprint='Yes' and 'Partial' data...")
     sp_insprint_data = []
     xlsx_file = XLSX_FILE
     sp_sheet_name = 'PT status'
@@ -2893,10 +2896,10 @@ def main():
                     print(f"   🔍 Sample Row {row_idx}: Lead='{lead}', Insprint='{insprint_status}', Total={row_dict.get('Total', 'N/A')}")
                     sample_rows_shown += 1
                 
-                if insprint_status.lower() == 'yes' and lead:
+                if insprint_status.lower() in ['yes', 'partial'] and lead:
                     rows_with_insprint_yes += 1
                 
-                if insprint_status.lower() != 'yes' or not lead:
+                if insprint_status.lower() not in ['yes', 'partial'] or not lead:
                     continue
                 
                 try:
@@ -2921,25 +2924,25 @@ def main():
                     'total': total
                 })
             
-            print(f"\n   📊 Processing Summary for Insprint='Yes':")
+            print(f"\n   📊 Processing Summary for Insprint='Yes'/'Partial':")
             print(f"   - Total rows processed: {rows_processed}")
             print(f"   - Rows with PT Lead: {rows_with_lead}")
-            print(f"   - Rows with Insprint='Yes': {rows_with_insprint_yes}")
+            print(f"   - Rows with Insprint='Yes'/'Partial': {rows_with_insprint_yes}")
             print(f"   - Records loaded: {len(sp_insprint_data)}")
             
             if len(sp_insprint_data) > 0:
-                print(f"   ✅ Successfully loaded {len(sp_insprint_data)} Insprint='Yes' records")
+                print(f"   ✅ Successfully loaded {len(sp_insprint_data)} Insprint='Yes'/'Partial' records")
                 # Show summary of loaded data
                 leads_found = set(item['lead'] for item in sp_insprint_data)
                 print(f"   👥 Unique leads found: {', '.join(sorted(leads_found))}")
                 total_count = sum(item['total'] for item in sp_insprint_data)
                 print(f"   📊 Total count across all records: {total_count}")
             else:
-                print(f"   ❌ ERROR: No Insprint='Yes' data was loaded!")
+                print(f"   ❌ ERROR: No Insprint='Yes'/'Partial' data was loaded!")
                 if rows_with_insprint_yes > 0:
-                    print(f"   Found {rows_with_insprint_yes} rows with Insprint='Yes' but data parsing failed.")
+                    print(f"   Found {rows_with_insprint_yes} rows with Insprint='Yes'/'Partial' but data parsing failed.")
                 else:
-                    print(f"   No rows found with Insprint='Yes'. Check the Excel file content.")
+                    print(f"   No rows found with Insprint='Yes' or 'Partial'. Check the Excel file content.")
                 print(f"   🔍 Troubleshooting: Check if column names match exactly (case-sensitive)")
         else:
             print(f"   ⚠️  No data rows found in SharePoint Excel file")
@@ -2952,7 +2955,7 @@ def main():
         'passed': 0, 'failed': 0, 'blocked': 0, 'not_run': 0, 'total': 0
     })
     
-    print(f"\n📊 Aggregating SharePoint Insprint='Yes' data by lead...")
+    print(f"\n📊 Aggregating SharePoint Insprint='Yes'/'Partial' data by lead...")
     for item in sp_insprint_data:
         lead = item['lead']
         planned_automation_sp[lead]['passed'] += item['passed']

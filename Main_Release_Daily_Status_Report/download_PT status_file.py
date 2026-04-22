@@ -39,7 +39,7 @@ SITE_URL = "https://ts.accenture.com/sites/mySPTesting"
 
 # Server-relative path to the folder containing the release Excel file
 FILE_FOLDER_RELATIVE_URL = "/sites/mySPTesting/Shared Documents/General/01 - Deliverables/Releases - FY 2025-2026/May"
-FILE_NAME_BASE = "May 9th Release"
+FILE_NAME_BASE = "May 9th_Release"
 EXCEL_EXTENSIONS = [".xlsx", ".xlsm", ".xls", ".xlsb"]
 
 # Canonical name to rename the downloaded file to (so callers always find it by this name)
@@ -177,8 +177,6 @@ def build_edge_driver() -> webdriver.Edge:
         print("  1. Go to: https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/")
         print("  2. Download matching your Edge version")
         print("  3. Extract to: C:\\Program Files\\Microsoft\\Edge\\Application\\")
-        print("\nSolution 3: Use existing Excel files")
-        print("  If files already exist, the main script will use them.")
         print("="*80 + "\n")
         raise RuntimeError("msedgedriver.exe not found. Cannot proceed with SharePoint download.")
     
@@ -253,6 +251,15 @@ def main() -> None:
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+    # ALWAYS delete existing file to force fresh download from SharePoint
+    canonical_path = os.path.join(OUTPUT_DIR, CANONICAL_FILENAME)
+    if os.path.exists(canonical_path):
+        try:
+            os.remove(canonical_path)
+            print(f"🗑️  Deleted existing file to force fresh download: {CANONICAL_FILENAME}")
+        except OSError as e:
+            print(f"⚠️  Could not delete existing file: {e}")
+
     # Clean up any stale partial files from previous failed runs
     for stale in glob.glob(os.path.join(OUTPUT_DIR, "*.crdownload")):
         try:
@@ -268,6 +275,7 @@ def main() -> None:
     )
 
     driver = None
+    download_success = False
     try:
         print("Starting headless Edge (no window will open) ...")
         driver = build_edge_driver()
@@ -308,6 +316,7 @@ def main() -> None:
                 print(f"  Local : {downloaded_path}")
                 print(f"  Size  : {size_kb:.1f} KB")
                 downloaded_path = _rename_to_canonical(downloaded_path)
+                download_success = True
                 break
 
         # ── Step 3: Fallback – REST API /$value ────────────────────────────
@@ -329,6 +338,7 @@ def main() -> None:
                     print(f"  Local : {downloaded_path}")
                     print(f"  Size  : {size_kb:.1f} KB")
                     downloaded_path = _rename_to_canonical(downloaded_path)
+                    download_success = True
                     break
 
         if not downloaded_path:
@@ -339,9 +349,17 @@ def main() -> None:
                 "  2. File name or path changed – update FILE_NAME_BASE or FILE_FOLDER_RELATIVE_URL.\n"
                 "  3. SharePoint permissions issue – verify access in browser first."
             )
+            if driver:
+                driver.quit()
+            import sys
+            sys.exit(1)  # Exit with error code
 
     except Exception as exc:
         print(f"\nUnexpected error: {exc}")
+        if driver:
+            driver.quit()
+        import sys
+        sys.exit(1)  # Exit with error code
     finally:
         if driver:
             # Ensure any in-progress download finishes before closing
@@ -355,7 +373,8 @@ def main() -> None:
                     break
                 time.sleep(1)
             driver.quit()
-            print("Done.")
+        if download_success:
+            print("✓ Download completed successfully.")
 
 
 if __name__ == "__main__":

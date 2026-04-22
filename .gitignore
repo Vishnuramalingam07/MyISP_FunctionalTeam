@@ -79,12 +79,8 @@ category_reports/*.xlsx
 # Windows installers
 *.exe
 *.msi
-postgresql-installer.exe
 
 # Test files
-test_*.py
-*_test.py
-test_db_connection.py
 
 # OS
 .DS_Store

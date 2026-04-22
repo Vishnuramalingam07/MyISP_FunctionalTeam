@@ -1,10 +1,10 @@
 # MyISP Internal Tools
 
-Internal tools application for team management, attendance tracking, and project reporting with PostgreSQL database.
+Internal tools application for team management, attendance tracking, and project reporting.
 
-## 🌐 Overview
+## Overview
 
-MyISP Internal Tools is a Flask-based web application that provides centralized access to various reporting tools, attendance management, and team analytics. All data is stored in a PostgreSQL database for reliability and concurrent access.
+MyISP Internal Tools is a Flask-based web application that provides centralized access to various reporting tools, attendance management, and team analytics. All data is stored in local Excel files for easy access and portability.
 
 ## 📊 Available Tools
 
@@ -22,7 +22,6 @@ MyISP Internal Tools is a Flask-based web application that provides centralized 
 ### Prerequisites
 
 - Python 3.10 or higher
-- PostgreSQL 17+ (for database)
 - Windows OS (for some features like pywin32)
 
 ### Installation
@@ -77,8 +76,6 @@ Access at: http://localhost:8000
 ```
 MyISP_Tools/
 ├── app.py                      # Main Flask application
-├── postgres_client.py          # Database connection module
-├── postgres_schema.sql         # Database schema
 ├── requirements.txt            # Python dependencies
 ├── index.html                  # Main landing page
 ├── styles.css                  # Global stylesheet
@@ -95,14 +92,11 @@ MyISP_Tools/
 - **`.env`** - Environment variables (database credentials) - NOT committed to Git
 - **`.env.example`** - Template for environment variables
 - **`requirements.txt`** - Python package dependencies
-- **`postgres_schema.sql`** - Database schema definition
 - **`.gitignore`** - Files to exclude from Git
 
 ## 📖 Documentation
 
-- **[POSTGRESQL_SETUP.md](POSTGRESQL_SETUP.md)** - Database setup and management guide
 - **[TEAM_SETUP_GUIDE.md](TEAM_SETUP_GUIDE.md)** - Team collaboration and network access setup
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Deployment options and cloud hosting guide
 - Individual feature documentation in respective folders
 
 ## 🔐 Security Considerations
@@ -135,17 +129,8 @@ Internal use only - proprietary software.
 ## 🎯 Quick Command Reference
 
 ```powershell
-# Start everything
-.\Start-All.ps1
-
-# Just start PostgreSQL
-"C:\Program Files\PostgreSQL\17\bin\pg_ctl" -D "C:\Program Files\PostgreSQL\17\data" start
-
-# Just start the app
+# Start the app
 python app.py
-
-# Database backup
-pg_dump -U postgres myisp_tools > backup.sql
 
 # Install dependencies
 pip install -r requirements.txt

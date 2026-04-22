@@ -1,0 +1,21 @@
+# Azure Functions Python Requirements
+
+# Azure Functions Core
+azure-functions>=1.18.0
+
+# Core Dependencies
+requests>=2.31.0
+pandas>=2.0.0
+openpyxl>=3.1.5
+xlsxwriter>=3.2.0
+pytz>=2024.0
+python-dotenv>=1.0.0
+
+# Document Processing
+python-docx
+
+# Web Automation (for SharePoint downloads)
+selenium>=4.0.0
+webdriver-manager>=4.0.0
+
+# Note: gunicorn, waitress, flask-httpauth NOT needed for Azure Functions

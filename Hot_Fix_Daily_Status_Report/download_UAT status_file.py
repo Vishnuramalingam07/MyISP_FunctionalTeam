@@ -208,6 +208,15 @@ def main() -> None:
 
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+    # ALWAYS delete existing file to force fresh download from SharePoint
+    canonical_path = os.path.join(OUTPUT_DIR, CANONICAL_FILENAME)
+    if os.path.exists(canonical_path):
+        try:
+            os.remove(canonical_path)
+            print(f"🗑️  Deleted existing file to force fresh download: {CANONICAL_FILENAME}")
+        except OSError as e:
+            print(f"⚠️  Could not delete existing file: {e}")
+
     # Clean up any stale partial files from previous failed runs
     for stale in glob.glob(os.path.join(OUTPUT_DIR, "*.crdownload")):
         try:
@@ -223,6 +232,7 @@ def main() -> None:
     )
 
     driver = None
+    download_success = False
     try:
         print("Starting headless Edge (no window will open) ...")
         driver = build_edge_driver()
@@ -263,6 +273,7 @@ def main() -> None:
                 print(f"  Local : {downloaded_path}")
                 print(f"  Size  : {size_kb:.1f} KB")
                 downloaded_path = _rename_to_canonical(downloaded_path)
+                download_success = True
                 break
 
         # ── Step 3: Fallback – REST API /$value ────────────────────────────
@@ -284,6 +295,7 @@ def main() -> None:
                     print(f"  Local : {downloaded_path}")
                     print(f"  Size  : {size_kb:.1f} KB")
                     downloaded_path = _rename_to_canonical(downloaded_path)
+                    download_success = True
                     break
 
         if not downloaded_path:
@@ -294,9 +306,17 @@ def main() -> None:
                 "  2. File name or path changed – update FILE_NAME_BASE or FILE_FOLDER_RELATIVE_URL.\n"
                 "  3. SharePoint permissions issue – verify access in browser first."
             )
+            if driver:
+                driver.quit()
+            import sys
+            sys.exit(1)  # Exit with error code
 
     except Exception as exc:
         print(f"\nUnexpected error: {exc}")
+        if driver:
+            driver.quit()
+        import sys
+        sys.exit(1)  # Exit with error code
     finally:
         if driver:
             # Ensure any in-progress download finishes before closing
@@ -310,7 +330,8 @@ def main() -> None:
                     break
                 time.sleep(1)
             driver.quit()
-            print("Done.")
+        if download_success:
+            print("✓ Download completed successfully.")
 
 
 if __name__ == "__main__":

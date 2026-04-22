@@ -1768,7 +1768,7 @@ def main():
     pt_leads = sorted(missing_df["PT Lead"].unique())
 
     def write_report(output_path: str):
-        with pd.ExcelWriter(output_path, engine="xlsxwriter") as writer:
+        with pd.ExcelWriter(output_path, engine="xlsxwriter", engine_kwargs={'options': {'nan_inf_to_errors': True}}) as writer:
             workbook = writer.book
             title_format = workbook.add_format({"bold": True, "font_size": 14})
             header_format = workbook.add_format({"bold": True, "bg_color": "#D9E1F2"})
@@ -1845,7 +1845,12 @@ def main():
                     details_ws.write(details_row, 4, rec["State"])
                     details_ws.write(details_row, 5, rec["Created By"])
                     details_ws.write_url(details_row, 6, rec["URL"], link_format, string=rec["URL"])
-                    details_ws.write(details_row, 7, rec["Field Value"])
+                    # Handle NaN/None values for Field Value
+                    field_val = rec["Field Value"]
+                    if pd.isna(field_val) or field_val is None:
+                        details_ws.write(details_row, 7, "")
+                    else:
+                        details_ws.write(details_row, 7, str(field_val))
                     details_row += 1
 
                 row = 2

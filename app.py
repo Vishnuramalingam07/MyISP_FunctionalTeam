@@ -2,10 +2,16 @@
 MyISP Internal Tools - Flask Server
 Handles report generation and serves static files
 """
-from flask import Flask, request, jsonify, send_from_directory, redirect, session, abort, send_file
-import subprocess
+# Fix Unicode encoding for Windows console
 import sys
 import os
+if sys.platform == 'win32':
+    import io
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+
+from flask import Flask, request, jsonify, send_from_directory, redirect, session, abort, send_file
+import subprocess
 import glob
 import calendar
 import re
@@ -19,16 +25,6 @@ from openpyxl.styles import PatternFill, Font, Alignment, Border, Side
 from functools import wraps
 import secrets
 from werkzeug.utils import secure_filename
-
-# Database integration – Local PostgreSQL
-try:
-    from postgres_client import postgres as _supabase
-    SUPABASE_ENABLED = True
-    print("✓ PostgreSQL database connected")
-except Exception as _sb_err:
-    _supabase = None
-    SUPABASE_ENABLED = False
-    print(f"⚠️  Database disabled (PostgreSQL connection failed): {_sb_err}")
 
 # Cell background colors matching the HTML tracker
 STATUS_COLORS = {
@@ -76,16 +72,7 @@ MASTER_ATTENDANCE_LOG_FILE = os.path.join(os.getcwd(), 'Attendance', 'Master_Att
 # ══════════════════════════════════════════════════════════════════════════
 
 def get_authorized_users():
-    """Load authorized users from Supabase (falls back to Access.csv when Supabase is unavailable)."""
-    # ── Supabase path ────────────────────────────────────────────────────
-    if SUPABASE_ENABLED:
-        try:
-            result = _supabase.table('authorized_users').select('username').execute()
-            return [row['username'].lower().strip() for row in (result.data or []) if row.get('username')]
-        except Exception as sb_err:
-            print(f"⚠️  Supabase authorized_users query failed, falling back to CSV: {sb_err}")
-
-    # ── CSV fallback ─────────────────────────────────────────────────────
+    """Load authorized users from Access.csv."""
     try:
         import csv, io
         access_file = os.path.join(os.getcwd(), 'Attendance', 'Access.csv')
@@ -582,8 +569,8 @@ def generate_regression_report():
                 'error': result.stderr
             }), 500
         
-        # Find the most recently created report file
-        report_pattern = 'regression_execution_report_*.html'
+        # Find the most recently created report file in Regression_Report folder
+        report_pattern = os.path.join('Regression_Report', 'regression_execution_report_*.html')
         report_files = glob.glob(report_pattern)
         
         if not report_files:
@@ -700,14 +687,12 @@ def run_daily_status_script():
         report_file = _find_main_release_dashboard_file()
         if os.path.exists(report_file):
             print(f"Report generated successfully: {report_file}")
-            daily_status_report_status['last_generated'] = report_file
+            # Store relative path for web access (convert absolute path to relative)
+            rel_path = os.path.relpath(report_file, os.getcwd()).replace('\\', '/')
+            daily_status_report_status['last_generated'] = rel_path
             daily_status_report_status['error'] = None
-            # Auto-open the dashboard in the default browser
-            try:
-                webbrowser.open(f'file:///{report_file.replace(os.sep, "/")}')
-                print(f"Opened dashboard in browser: {report_file}")
-            except Exception as e:
-                print(f"Warning: Could not open browser: {e}")
+            # Frontend (daily-report.html) will auto-open the report in a new tab
+            print(f"Dashboard ready at: {rel_path}")
         else:
             daily_status_report_status['error'] = 'Dashboard HTML not found after generation'
 
@@ -1077,13 +1062,13 @@ TC_COMPARE_SCRIPT_FIELDS = {
         'dict'
     ),
     'sp_folder_path': (
-        os.path.join('TC_Compare', 'download_sharepoint_file.py'),
+        os.path.join('TC_Compare', 'download_PT status_file.py'),
         'FILE_FOLDER_RELATIVE_URL',
         r'FILE_FOLDER_RELATIVE_URL\s*=\s*(?:"[^"]*")+',
         'assign'
     ),
     'file_name': (
-        os.path.join('TC_Compare', 'download_sharepoint_file.py'),
+        os.path.join('TC_Compare', 'download_PT status_file.py'),
         'FILE_NAME_BASE',
         r'FILE_NAME_BASE\s*=\s*"[^"]*"',
         'assign'
@@ -1490,7 +1475,8 @@ def run_missing_fields_script():
             report_generation_status['in_progress'] = False
             return
         
-        report_file = os.path.join('Missing_Filed_Report', 'Missing_Fields_Report.html')
+        # Script generates Excel file, not HTML
+        report_file = os.path.join('Missing_Filed_Report', 'Missing_Fields_Report.xlsx')
         
         if os.path.exists(report_file):
             print(f"✅ Report generated successfully: {report_file}")
@@ -2095,107 +2081,6 @@ def update_regression_config():
         }), 500
 
 
-# ── Supabase helpers for attendance ──────────────────────────────────────────
-
-def _supabase_save_attendance(entries, lead_name, user_id, year, month, month_name, client_ip):
-    """Upsert attendance records and write a log row to Supabase.
-
-    Called after the Excel save succeeds so Supabase mirrors the authoritative data.
-    Errors here are logged but do not fail the HTTP response.
-    """
-    # Generated by GitHub Copilot
-    if not SUPABASE_ENABLED:
-        return
-    try:
-        days_in_month = calendar.monthrange(year, month)[1]
-        upsert_rows = []
-        log_rows = []
-        saved_at = datetime.now().isoformat()
-
-        for entry in entries:
-            member_name = (entry.get('member_name') or '').strip()
-            location    = (entry.get('location') or '').strip()
-            day         = entry.get('day')
-            status      = (entry.get('status') or '').strip()
-
-            if not member_name or not isinstance(day, int) or day < 1 or day > days_in_month:
-                continue
-
-            upsert_rows.append({
-                'member_name': member_name,
-                'lead_name':   lead_name,
-                'location':    location,
-                'year':        year,
-                'month':       month,
-                'day':         day,
-                'status':      status,
-                'updated_at':  saved_at,
-            })
-            log_rows.append({
-                'saved_at':   saved_at,
-                'user_id':    user_id,
-                'lead_name':  lead_name,
-                'member_name': member_name,
-                'location':   location,
-                'month_name': month_name,
-                'year':       year,
-                'day':        day,
-                'new_value':  status,
-                'changed':    'YES',
-                'client_ip':  client_ip,
-            })
-
-        if upsert_rows:
-            # Upsert in batches of 100 to avoid large request payloads
-            batch_size = 100
-            for i in range(0, len(upsert_rows), batch_size):
-                _supabase.table('attendance_records').upsert(
-                    upsert_rows[i:i + batch_size],
-                    on_conflict='member_name,year,month,day'
-                ).execute()
-
-        if log_rows:
-            for i in range(0, len(log_rows), batch_size):
-                _supabase.table('attendance_logs').insert(log_rows[i:i + batch_size]).execute()
-
-        print(f"✅ Supabase: upserted {len(upsert_rows)} attendance records")
-    except Exception as e:
-        print(f"⚠️  Supabase attendance save error (non-fatal): {e}")
-
-
-def _supabase_load_attendance(lead_name, year, month):
-    """Return attendance dict from Supabase or None if unavailable.
-
-    Format matches the Excel loader: { 'MemberName|Location': { '1': 'P', ... } }
-    """
-    # Generated by GitHub Copilot
-    if not SUPABASE_ENABLED:
-        return None
-    try:
-        result = (
-            _supabase.table('attendance_records')
-            .select('member_name,location,day,status')
-            .eq('year', year)
-            .eq('month', month)
-            .execute()
-        )
-        rows = result.data or []
-        if not rows:
-            return None
-
-        attendance = {}
-        for row in rows:
-            key = f"{row['member_name']}|{row.get('location', '')}"
-            if key not in attendance:
-                attendance[key] = {}
-            attendance[key][str(row['day'])] = row.get('status', '')
-
-        return attendance
-    except Exception as e:
-        print(f"⚠️  Supabase attendance load error (non-fatal): {e}")
-        return None
-
-
 @app.route('/api/attendance/save-master-excel', methods=['POST'])
 def save_attendance_to_master_excel():
     """In-place update of Master_Attendance.xlsx — finds existing member rows/day columns and writes only the changed cells."""
@@ -2509,9 +2394,6 @@ def save_attendance_to_master_excel():
         workbook.save(MASTER_ATTENDANCE_FILE)
         logs_workbook.save(MASTER_ATTENDANCE_LOG_FILE)
 
-        # Mirror to Supabase (non-blocking, errors are logged but not fatal)
-        _supabase_save_attendance(entries, lead_name, user_id, year, month, month_name, client_ip)
-
         print(f"\n✅ Saved to Master Excel:")
         print(f"   Sheet: {actual_sheet_name}")
         print(f"   Members updated: {members_updated}")
@@ -2812,22 +2694,7 @@ def load_attendance_from_master_excel():
         month_name = calendar.month_name[month]
         sheet_name = f'Attendance {month_name} {year}'[:31]
 
-        # ── Try Supabase first ────────────────────────────────────────────
-        sb_attendance = _supabase_load_attendance(lead_name, year, month)
-        if sb_attendance is not None:
-            print(f"✅ Supabase: loaded {len(sb_attendance)} member records for {month_name} {year}")
-            return jsonify({
-                'success': True,
-                'has_data': bool(sb_attendance),
-                'attendance': sb_attendance,
-                'last_update_time': None,
-                'sheet_name': sheet_name,
-                'month': month,
-                'year': year,
-                'source': 'supabase',
-            })
-
-        # ── Fall back to Excel (with retry logic) ─────────────────────────
+        # ── Load from Excel ─────────────────────────────────────────────────
     except Exception as _pre_err:
         print(f"⚠️  Pre-load error: {_pre_err}")
         return jsonify({'success': False, 'error': str(_pre_err)}), 500

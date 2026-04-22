@@ -26,6 +26,9 @@ if sys.platform == 'win32':
 from dotenv import load_dotenv
 load_dotenv('ADO_SECRETS.env')
 
+# Get the directory where this script is located
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
 ADO_CONFIG = {
     'organization': 'accenturecio08',
     'project': 'AutomationProcess_29697',
@@ -3451,7 +3454,7 @@ class CustomHTMLReportGenerator:
         """Generate and save HTML report to file"""
         if not filename:
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"regression_execution_report_{timestamp}.html"
+            filename = os.path.join(SCRIPT_DIR, f"regression_execution_report_{timestamp}.html")
         
         html_content = self.generate_html()
         
